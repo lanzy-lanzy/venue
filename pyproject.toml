@@ -1,0 +1,15 @@
+[project]
+name = "venue-booking"
+version = "0.1.0"
+description = "A Django-based Venue Booking & Reservation System."
+authors = ["Your Name <your@email.com>"]
+requires-python = ">=3.13"
+dependencies = [
+    "django>=5.1",
+    "django-tailwind",
+    "pillow",  # For image handling
+    "django-htmx",  # For HTMX integration
+]
+
+[tool.uv]
+# Optional: add uv-specific config here if needed

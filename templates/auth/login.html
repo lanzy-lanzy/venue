@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - VenueBook{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden mt-8">
+    <div class="bg-primary text-white py-4 px-6">
+        <h2 class="text-2xl font-bold">Login to Your Account</h2>
+    </div>
+
+    <div class="p-6">
+        {% if form.errors %}
+        <div class="bg-red-100 text-red-700 p-4 rounded-md mb-4">
+            <p>Your username and password didn't match. Please try again.</p>
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label for="id_username" class="block text-gray-700 font-medium mb-2">Username</label>
+                <input type="text" name="username" id="id_username" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent" required>
+            </div>
+
+            <div class="mb-6">
+                <label for="id_password" class="block text-gray-700 font-medium mb-2">Password</label>
+                <input type="password" name="password" id="id_password" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent" required>
+            </div>
+
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center">
+                    <input type="checkbox" name="remember" id="remember" class="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded">
+                    <label for="remember" class="ml-2 block text-gray-700">Remember me</label>
+                </div>
+
+                <a href="#" class="text-accent hover:text-accent/80 text-sm">Forgot password?</a>
+            </div>
+
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <button type="submit" class="w-full bg-accent text-white py-2 px-4 rounded-md hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 transition">
+                Login
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-gray-600">Don't have an account? <a href="{% url 'register' %}" class="text-accent hover:text-accent/80 font-medium">Sign up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

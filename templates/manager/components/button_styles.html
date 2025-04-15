@@ -1,0 +1,291 @@
+<!-- Button Styles -->
+<style>
+    /* Primary Button - Orange */
+    .btn-primary {
+        background-color: #FF8C32;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #FF8C32;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(255, 140, 50, 0.2);
+    }
+
+    .btn-primary:hover {
+        background-color: #ff7b19;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 140, 50, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 2px rgba(255, 140, 50, 0.2);
+    }
+
+    /* Secondary Button - Blue */
+    .btn-secondary {
+        background-color: #06113C;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #06113C;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(6, 17, 60, 0.2);
+    }
+
+    .btn-secondary:hover {
+        background-color: #091c5f;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(6, 17, 60, 0.3);
+    }
+
+    .btn-secondary:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 2px rgba(6, 17, 60, 0.2);
+    }
+
+    /* Outline Button - Orange */
+    .btn-outline-primary {
+        background-color: transparent;
+        color: #FF8C32;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #FF8C32;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #FF8C32;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 140, 50, 0.2);
+    }
+
+    /* Outline Button - Blue */
+    .btn-outline-secondary {
+        background-color: transparent;
+        color: #06113C;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #06113C;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #06113C;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(6, 17, 60, 0.2);
+    }
+
+    /* Success Button - Green */
+    .btn-success {
+        background-color: #10B981;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #10B981;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-success:hover {
+        background-color: #0ea271;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Danger Button - Red */
+    .btn-danger {
+        background-color: #EF4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #EF4444;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-danger:hover {
+        background-color: #e02424;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Info Button - Light Blue */
+    .btn-info {
+        background-color: #3B82F6;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #3B82F6;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-info:hover {
+        background-color: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Button Sizes */
+    .btn-sm {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.125rem;
+    }
+
+    /* Button with Icon */
+    .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-icon svg {
+        margin-right: 0.5rem;
+        transition: transform 0.2s;
+    }
+
+    .btn-icon:hover svg {
+        transform: scale(1.1);
+    }
+
+    /* Action Buttons for Venue Cards */
+    .venue-action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .venue-action-btn.edit {
+        background-color: #FF8C32;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(255, 140, 50, 0.2);
+    }
+
+    .venue-action-btn.edit:hover {
+        background-color: #ff7b19;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 140, 50, 0.3);
+    }
+
+    .venue-action-btn.manage {
+        background-color: #10B981;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .venue-action-btn.manage:hover {
+        background-color: #0ea271;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .venue-action-btn.view {
+        background-color: #3B82F6;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+
+    .venue-action-btn.view:hover {
+        background-color: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Add New Venue Button */
+    .add-venue-btn {
+        position: relative;
+        overflow: hidden;
+        background-color: #FF8C32;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px; /* Full rounded */
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px rgba(255, 140, 50, 0.25);
+        border: none;
+        cursor: pointer;
+    }
+
+    .add-venue-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .add-venue-btn:hover {
+        background-color: #ff7b19;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(255, 140, 50, 0.4);
+    }
+
+    .add-venue-btn:hover::before {
+        left: 100%;
+    }
+
+    .add-venue-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 6px rgba(255, 140, 50, 0.3);
+    }
+
+    .add-venue-btn svg {
+        margin-right: 0.5rem;
+        transition: transform 0.2s;
+    }
+
+    .add-venue-btn:hover svg {
+        transform: scale(1.2) rotate(90deg);
+    }
+</style>

@@ -1,0 +1,38 @@
+<!-- User Sidebar Styles -->
+<style>
+    .sidebar {
+        background-color: #06113C;
+        color: white;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        color: rgba(255, 255, 255, 0.8);
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        margin-bottom: 0.25rem;
+    }
+    
+    .sidebar-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    
+    .sidebar-link.active {
+        background-color: #FF8C32;
+        color: white;
+        font-weight: 500;
+    }
+    
+    .sidebar-link svg {
+        margin-right: 0.75rem;
+        transition: transform 0.2s;
+    }
+    
+    .sidebar-link:hover svg {
+        transform: scale(1.1);
+    }
+</style>

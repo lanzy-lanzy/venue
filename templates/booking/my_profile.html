@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - VenueBook{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden mb-8">
+        <div class="bg-primary text-white py-4 px-6 flex justify-between items-center">
+            <h2 class="text-2xl font-bold">My Profile</h2>
+            <a href="{% url 'edit_profile' %}" class="bg-accent text-white hover:bg-accent/80 transition px-4 py-2 rounded-md font-medium">
+                Edit Profile
+            </a>
+        </div>
+
+        <div class="p-6">
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Profile Picture -->
+                <div class="md:w-1/3 flex flex-col items-center">
+                    {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}"
+                         class="w-48 h-48 object-cover rounded-full border-4 border-accent/20">
+                    {% else %}
+                    <div class="w-48 h-48 bg-light-gray rounded-full flex items-center justify-center border-4 border-accent/20">
+                        <svg class="w-24 h-24 text-accent" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4 text-center">
+                        <h3 class="text-xl font-semibold">{{ profile.user.get_full_name|default:profile.user.username }}</h3>
+                        <p class="text-gray-600">{{ profile.get_role_display }}</p>
+                        <p class="text-gray-500">Member since {{ profile.created_at|date:"F Y" }}</p>
+                    </div>
+                </div>
+
+                <!-- Profile Details -->
+                <div class="md:w-2/3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-lg font-semibold mb-2 text-gray-700">Contact Information</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <span class="text-gray-600 font-medium w-24">Email:</span>
+                                    <span>{{ profile.user.email|default:"Not provided" }}</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-gray-600 font-medium w-24">Phone:</span>
+                                    <span>{{ profile.phone|default:"Not provided" }}</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-gray-600 font-medium w-24">Address:</span>
+                                    <span>{{ profile.address|default:"Not provided" }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold mb-2 text-gray-700">Booking Preferences</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <span class="text-gray-600 font-medium w-24">Payment:</span>
+                                    <span>{{ profile.preferred_payment_method|default:"Not specified" }}</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-gray-600 font-medium w-24">Preferences:</span>
+                                    <span>{{ profile.booking_preferences|default:"No preferences specified"|linebreaksbr }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Role Benefits -->
+                    <div class="mt-8">
+                        <h4 class="text-lg font-semibold mb-2 text-gray-700">Your {{ profile.get_role_display }} Benefits</h4>
+                        <div class="bg-primary/5 rounded-md p-4">
+                            {% if profile.role == 'premium' %}
+                                <ul class="list-disc list-inside space-y-1 text-primary">
+                                    <li>10% discount on all bookings</li>
+                                    <li>Priority booking for popular venues</li>
+                                    <li>Flexible cancellation (up to 1 hour before)</li>
+                                    <li>Extended booking hours</li>
+                                    <li>Complimentary amenities at select venues</li>
+                                </ul>
+                            {% elif profile.role == 'corporate' %}
+                                <ul class="list-disc list-inside space-y-1 text-primary">
+                                    <li>15% discount on all bookings</li>
+                                    <li>Dedicated event coordinator</li>
+                                    <li>Access to premium equipment</li>
+                                    <li>Flexible cancellation (up to 1 hour before)</li>
+                                    <li>Complimentary catering options</li>
+                                    <li>Priority booking for future events</li>
+                                </ul>
+                            {% else %}
+                                <ul class="list-disc list-inside space-y-1 text-primary">
+                                    <li>Standard booking privileges</li>
+                                    <li>Regular booking hours</li>
+                                    <li>Standard cancellation policy (24 hours notice)</li>
+                                </ul>
+                                <p class="mt-2 text-sm text-accent">
+                                    <a href="#" class="font-medium hover:underline">Upgrade to Premium</a> for additional benefits!
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Statistics -->
+    <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden mb-8">
+        <div class="bg-primary text-white py-4 px-6">
+            <h2 class="text-xl font-bold">Booking Statistics</h2>
+        </div>
+
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-primary/5 rounded-lg p-4 text-center">
+                    <p class="text-3xl font-bold text-primary">{{ booking_stats.total_bookings }}</p>
+                    <p class="text-gray-600">Total Bookings</p>
+                </div>
+                <div class="bg-accent/10 rounded-lg p-4 text-center">
+                    <p class="text-3xl font-bold text-accent">{{ booking_stats.confirmed_count }}</p>
+                    <p class="text-gray-600">Confirmed</p>
+                </div>
+                <div class="bg-accent/5 rounded-lg p-4 text-center">
+                    <p class="text-3xl font-bold text-accent/80">{{ booking_stats.pending_count }}</p>
+                    <p class="text-gray-600">Pending</p>
+                </div>
+                <div class="bg-light-gray/50 rounded-lg p-4 text-center">
+                    <p class="text-3xl font-bold text-gray-500">{{ booking_stats.cancelled_count }}</p>
+                    <p class="text-gray-600">Cancelled</p>
+                </div>
+            </div>
+
+            {% if booking_stats.upcoming_bookings %}
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">Upcoming Bookings</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Venue</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for booking in booking_stats.upcoming_bookings %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ booking.venue.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ booking.time_slot.date|date:"M d, Y" }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ booking.time_slot.start_time|time:"g:i A" }} - {{ booking.time_slot.end_time|time:"g:i A" }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        {% if booking.status == 'confirmed' %}bg-accent/20 text-accent
+                                        {% elif booking.status == 'pending' %}bg-accent/10 text-accent/80
+                                        {% else %}bg-light-gray/50 text-gray-500{% endif %}">
+                                        {{ booking.status|title }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <a href="{% url 'booking_detail' booking.id %}" class="text-accent hover:text-accent/80">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% else %}
+            <div class="mt-8 text-center py-8 bg-gray-50 rounded-lg">
+                <p class="text-gray-500">You don't have any upcoming bookings.</p>
+                <a href="{% url 'venue_list' %}" class="mt-2 inline-block text-accent hover:text-accent/80 font-medium">Browse Venues</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

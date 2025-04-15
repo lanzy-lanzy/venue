@@ -1,0 +1,71 @@
+<!-- My Venues -->
+<div class="mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-primary">My Venues</h2>
+        <button onclick="openAddModal()" class="add-venue-btn">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add New Venue
+        </button>
+    </div>
+
+    {% if venues %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for venue in venues %}
+        <div class="venue-card bg-white">
+            <div class="h-40 bg-gray-200 relative">
+                {% if venue.image %}
+                <img src="{{ venue.image.url }}" alt="{{ venue.name }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full bg-light-gray/30 flex items-center justify-center">
+                    <div class="w-16 h-16 text-accent">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="absolute top-3 right-3">
+                    <span class="badge {% if venue.status == 'active' %}badge-success{% elif venue.status == 'maintenance' %}badge-warning{% else %}badge-danger{% endif %}">
+                        {{ venue.status|title }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="p-4">
+                <h3 class="text-lg font-semibold text-primary mb-1">{{ venue.name }}</h3>
+                <p class="text-gray-600 text-sm mb-3">{{ venue.address }}</p>
+
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-sm text-gray-600">Capacity: <span class="font-medium">{{ venue.capacity }}</span></div>
+                    <div class="text-accent font-medium">${{ venue.hourly_rate }}/hr</div>
+                </div>
+
+                <a href="{% url 'venue_detail' venue.id %}" class="text-accent hover:text-accent/80 text-sm font-medium flex items-center">
+                    View Details
+                    <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="dashboard-card p-8 text-center">
+        <svg class="h-16 w-16 text-light-gray mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        <h2 class="text-xl font-semibold mb-2 text-primary">No Venues Yet</h2>
+        <p class="text-gray-600 mb-6">You haven't added any venues yet. Get started by adding your first venue.</p>
+        <button onclick="openAddModal()" class="add-venue-btn">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add Your First Venue
+        </button>
+    </div>
+    {% endif %}
+</div>

@@ -1,0 +1,4 @@
+<!-- Logout Form -->
+<form id="logout-form" action="{% url 'logout' %}" method="post" class="hidden">
+    {% csrf_token %}
+</form>

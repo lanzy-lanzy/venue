@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Venue - VenueBook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#06113C',
+                        accent: '#FF8C32',
+                        'light-gray': '#DDDDDD',
+                        'off-white': '#EEEEEE',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            background-image: 
+                linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+    </style>
+    
+    {% include 'manager/components/sidebar_styles.html' %}
+    
+    {% include 'manager/components/dashboard_styles.html' %}
+</head>
+<body>
+<div class="dashboard-container">
+    {% with active_page='venues' %}
+        {% include 'manager/components/sidebar.html' %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    <main class="p-8">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-primary">Edit Venue</h1>
+            <a href="{% url 'manager_venues' %}" class="btn-secondary flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Venues
+            </a>
+        </div>
+        
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h2 class="text-xl font-semibold text-primary">Venue Information</h2>
+            </div>
+            <div class="p-6">
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="bg-red-50 border border-red-200 text-red-800 rounded-md p-4 mb-6">
+                        <h3 class="font-semibold mb-2">Please correct the following errors:</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-gray-700 font-medium mb-2">Venue Name</label>
+                            {{ form.name }}
+                            {% if form.name.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.name.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.address.id_for_label }}" class="block text-gray-700 font-medium mb-2">Address</label>
+                            {{ form.address }}
+                            {% if form.address.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.address.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.capacity.id_for_label }}" class="block text-gray-700 font-medium mb-2">Capacity</label>
+                            {{ form.capacity }}
+                            {% if form.capacity.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.capacity.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.hourly_rate.id_for_label }}" class="block text-gray-700 font-medium mb-2">Hourly Rate ($)</label>
+                            {{ form.hourly_rate }}
+                            {% if form.hourly_rate.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.hourly_rate.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.status.id_for_label }}" class="block text-gray-700 font-medium mb-2">Status</label>
+                            {{ form.status }}
+                            {% if form.status.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.status.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.categories.id_for_label }}" class="block text-gray-700 font-medium mb-2">Categories</label>
+                            {{ form.categories }}
+                            {% if form.categories.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.categories.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.description.id_for_label }}" class="block text-gray-700 font-medium mb-2">Description</label>
+                        {{ form.description }}
+                        {% if form.description.help_text %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.description.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.amenities.id_for_label }}" class="block text-gray-700 font-medium mb-2">Amenities</label>
+                        {{ form.amenities }}
+                        {% if form.amenities.help_text %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.amenities.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.image.id_for_label }}" class="block text-gray-700 font-medium mb-2">Venue Image</label>
+                        {% if venue.image %}
+                        <div class="mb-2">
+                            <img src="{{ venue.image.url }}" alt="{{ venue.name }}" class="h-40 object-cover rounded-md">
+                            <p class="text-sm text-gray-500 mt-1">Current image. Upload a new one to replace it.</p>
+                        </div>
+                        {% endif %}
+                        {{ form.image }}
+                        {% if form.image.help_text %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.image.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4">
+                        <a href="{% url 'manager_venues' %}" class="btn-secondary">Cancel</a>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

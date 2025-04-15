@@ -1,0 +1,46 @@
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="p-6">
+        <div class="flex items-center space-x-3 mb-8">
+            <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-white font-bold text-xl">
+                {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-white">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="text-white/70 text-sm">{% if user.venue_manager %}{{ user.venue_manager.company_name }}{% else %}Venue Manager{% endif %}</p>
+            </div>
+        </div>
+
+        <nav class="space-y-1 mt-8">
+            <a href="{% url 'manager_dashboard' %}" class="sidebar-link {% if active_page == 'dashboard' %}active{% endif %}">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="{% url 'manager_venues' %}" class="sidebar-link {% if active_page == 'venues' %}active{% endif %}">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                My Venues
+            </a>
+            <a href="{% url 'manager_bookings' %}" class="sidebar-link {% if active_page == 'bookings' %}active{% endif %}">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Bookings
+            </a>
+            <a href="{% if venues %}{% url 'manager_time_slots' venues.first.id %}{% else %}#{% endif %}" class="sidebar-link {% if active_page == 'time_slots' %}active{% endif %}" {% if not venues %}style="opacity: 0.5; pointer-events: none;"{% endif %}>
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Time Slots
+            </a>
+        </nav>
+
+        <div class="mt-12 p-4 bg-white/10 rounded-lg">
+            <h3 class="font-semibold text-white mb-2">Quick Tips</h3>
+            <p class="text-white/70 text-sm">Keep your venue information up-to-date to attract more bookings.</p>
+        </div>
+    </div>
+</aside>

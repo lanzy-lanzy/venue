@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - VenueBook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#06113C',
+                        accent: '#FF8C32',
+                        'light-gray': '#DDDDDD',
+                        'off-white': '#EEEEEE',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            background-image: 
+                linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+    </style>
+    
+    {% include 'booking/components/user_sidebar_styles.html' %}
+    
+    {% include 'booking/components/user_dashboard_styles.html' %}
+</head>
+<body>
+    <div class="dashboard-container">
+        {% with active_page='bookings' %}
+            {% include 'booking/components/user_sidebar.html' %}
+        {% endwith %}
+        
+        <!-- Main Content -->
+        <main class="p-8">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-primary">My Bookings</h1>
+                <a href="{% url 'venue_list' %}" class="btn btn-primary">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Book New Venue
+                </a>
+            </div>
+            
+            <!-- All Bookings -->
+            <div class="dashboard-card mb-8">
+                <div class="dashboard-card-header">
+                    <h2 class="text-xl font-semibold text-primary">All Bookings</h2>
+                </div>
+                
+                {% if bookings %}
+                <div class="overflow-x-auto">
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Venue</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>
+                                    <div class="flex items-center">
+                                        {% if booking.venue.image %}
+                                        <div class="flex-shrink-0 h-10 w-10 mr-3">
+                                            <img class="h-10 w-10 rounded-md object-cover" src="{{ booking.venue.image.url }}" alt="{{ booking.venue.name }}">
+                                        </div>
+                                        {% else %}
+                                        <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-md flex items-center justify-center mr-3">
+                                            <svg class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <div class="font-medium text-primary">{{ booking.venue.name }}</div>
+                                            <div class="text-xs text-gray-500">{{ booking.venue.address|truncatechars:30 }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-gray-900">{{ booking.time_slot.date|date:"M d, Y" }}</div>
+                                    <div class="text-sm text-gray-500">{{ booking.time_slot.start_time|time:"g:i A" }} - {{ booking.time_slot.end_time|time:"g:i A" }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                                        {{ booking.status|title }}
+                                    </span>
+                                </td>
+                                <td class="font-medium text-accent">${{ booking.total_price }}</td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-secondary">View</a>
+                                        {% if booking.status != 'cancelled' %}
+                                        <a href="{% url 'cancel_booking' booking.id %}"
+                                           class="btn btn-sm bg-red-600 text-white hover:bg-red-500"
+                                           onclick="return confirm('Are you sure you want to cancel this booking?');">
+                                            Cancel
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-8 text-center">
+                    <svg class="h-16 w-16 text-light-gray mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <h2 class="text-xl font-semibold mb-2 text-primary">No Bookings Yet</h2>
+                    <p class="text-gray-600 mb-6">You haven't made any bookings yet. Start by browsing our venues.</p>
+                    <a href="{% url 'venue_list' %}" class="btn btn-primary">Browse Venues</a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Booking Tips -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <h2 class="text-xl font-semibold text-primary">Booking Tips</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-primary/5 p-4 rounded-lg border border-light-gray/30">
+                            <h3 class="font-semibold text-primary mb-2">Early Booking</h3>
+                            <p class="text-gray-700 text-sm">Book your venues early to ensure availability, especially for popular dates.</p>
+                        </div>
+                        
+                        <div class="bg-primary/5 p-4 rounded-lg border border-light-gray/30">
+                            <h3 class="font-semibold text-primary mb-2">Check Details</h3>
+                            <p class="text-gray-700 text-sm">Double-check venue capacity and amenities to ensure they meet your needs.</p>
+                        </div>
+                        
+                        <div class="bg-primary/5 p-4 rounded-lg border border-light-gray/30">
+                            <h3 class="font-semibold text-primary mb-2">Cancellation Policy</h3>
+                            <p class="text-gray-700 text-sm">
+                                {% if profile.role == 'premium' or profile.role == 'corporate' %}
+                                As a {{ profile.get_role_display }}, you can cancel up to 1 hour before your booking.
+                                {% else %}
+                                Regular users can cancel bookings up to 24 hours before the scheduled time.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

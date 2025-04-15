@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ venue.name }} - VenueBook{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <!-- Breadcrumbs -->
+    <div class="text-sm text-gray-600 mb-4">
+        <a href="{% url 'home' %}" class="hover:text-accent">Home</a> &gt;
+        <a href="{% url 'venue_list' %}" class="hover:text-accent">Venues</a> &gt;
+        <span class="text-primary">{{ venue.name }}</span>
+    </div>
+
+    <!-- Venue Details -->
+    <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden mb-8">
+        <div class="md:flex">
+            <!-- Venue Image -->
+            <div class="md:w-1/2">
+                {% load svg_tags %}
+                {% if venue.image %}
+                <img src="{{ venue.image.url }}" alt="{{ venue.name }}" class="w-full h-80 object-cover">
+                {% else %}
+                <div class="w-full h-80 bg-light-gray/30 flex items-center justify-center">
+                    <div class="w-40 h-40 text-accent">
+                        {% venue_icon venue %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Venue Info -->
+            <div class="md:w-1/2 p-6">
+                <h1 class="text-3xl font-bold mb-2 text-primary">{{ venue.name }}</h1>
+
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% for category in venue.categories.all %}
+                    <span class="bg-primary/10 text-primary text-sm px-3 py-1 rounded-full">{{ category.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-gray-600"><strong>Address:</strong> {{ venue.address }}</p>
+                    <p class="text-gray-600"><strong>Capacity:</strong> {{ venue.capacity }} people</p>
+                    <p class="text-accent font-bold text-xl">${{ venue.hourly_rate }}/hour</p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2 text-primary">Description</h3>
+                    <p class="text-gray-600">{{ venue.description }}</p>
+                </div>
+
+                <a href="#booking-section" class="bg-accent text-white py-2 px-6 rounded-md hover:bg-accent/80 transition inline-block">Book Now</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Section -->
+    <div id="booking-section" class="bg-white rounded-lg shadow-md border border-light-gray/50 p-6 mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-primary">Book This Venue</h2>
+
+        {% if user.is_authenticated %}
+            {% if available_slots %}
+                <div x-data="{ selectedDate: '' }">
+                    <div class="mb-6">
+                        <label for="booking-date" class="block text-gray-700 font-medium mb-2">Select Date</label>
+                        <select id="booking-date" x-model="selectedDate"
+                                hx-get="{% url 'get_available_slots' venue.id %}"
+                                hx-target="#time-slots-container"
+                                hx-trigger="change"
+                                hx-include="[name='date']"
+                                class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                            <option value="">Select a date</option>
+                            {% regroup available_slots by date as date_list %}
+                            {% for date_group in date_list %}
+                                <option value="{{ date_group.grouper|date:'Y-m-d' }}">{{ date_group.grouper|date:"l, F j, Y" }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" name="date" :value="selectedDate">
+                    </div>
+
+                    <div id="time-slots-container" class="mb-6">
+                        <p class="text-gray-600">Please select a date to see available time slots.</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="bg-yellow-100 text-yellow-800 p-4 rounded-md mb-4 border border-yellow-200">
+                    <p>No available time slots for this venue in the next 7 days.</p>
+                </div>
+                <p class="text-gray-600">Please check back later or contact us for special arrangements.</p>
+            {% endif %}
+        {% else %}
+            <div class="bg-primary/10 text-primary p-4 rounded-md mb-4 border border-light-gray/30">
+                <p>Please <a href="{% url 'login' %}?next={{ request.path }}" class="underline font-semibold text-accent hover:text-accent/80">login</a> to book this venue.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Venue Features -->
+    <div class="bg-white rounded-lg shadow-md border border-light-gray/50 p-6 mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-primary">Venue Features</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-gray-700">Capacity for {{ venue.capacity }} people</span>
+            </div>
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-gray-700">Professional staff</span>
+            </div>
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-gray-700">Convenient location</span>
+            </div>
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-gray-700">Parking available</span>
+            </div>
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-gray-700">Wi-Fi included</span>
+            </div>
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-gray-700">AV equipment</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Venues -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-primary">Similar Venues</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for category in venue.categories.all %}
+                {% for similar_venue in category.venues.all %}
+                    {% if similar_venue.id != venue.id and similar_venue.status == 'active' %}
+                        <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden hover:shadow-lg transition">
+                            {% if similar_venue.image %}
+                            <img src="{{ similar_venue.image.url }}" alt="{{ similar_venue.name }}" class="w-full h-40 object-cover">
+                            {% else %}
+                            <div class="w-full h-40 bg-light-gray/30 flex items-center justify-center">
+                                <div class="w-20 h-20 text-accent">
+                                    {% venue_icon similar_venue %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold mb-1 text-primary">{{ similar_venue.name }}</h3>
+                                <p class="text-gray-600 text-sm mb-2 truncate">{{ similar_venue.address }}</p>
+                                <p class="text-accent font-bold mb-2">${{ similar_venue.hourly_rate }}/hour</p>
+
+                                <a href="{% url 'venue_detail' similar_venue.id %}" class="text-accent hover:text-accent/80 text-sm font-medium">View Details</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

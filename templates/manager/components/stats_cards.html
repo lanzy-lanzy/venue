@@ -1,0 +1,44 @@
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="stats-card">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                <svg class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-gray-500 text-sm font-medium uppercase tracking-wide">Total Venues</p>
+                <h3 class="text-3xl font-bold text-primary mt-1">{{ venues_count }}</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-card">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-gray-500 text-sm font-medium uppercase tracking-wide">Confirmed Bookings</p>
+                <h3 class="text-3xl font-bold text-green-600 mt-1">{{ confirmed_bookings_count }}</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-card">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mr-4">
+                <svg class="h-6 w-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-gray-500 text-sm font-medium uppercase tracking-wide">Pending Bookings</p>
+                <h3 class="text-3xl font-bold text-accent mt-1">{{ pending_bookings_count }}</h3>
+            </div>
+        </div>
+    </div>
+</div>

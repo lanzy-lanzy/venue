@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+{% load user_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Venue Booking System{% endblock %}</title>
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom TailwindCSS Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#06113C',
+                        'accent': '#FF8C32',
+                        'light-gray': '#DDDDDD',
+                        'off-white': '#EEEEEE'
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS for patterns -->
+    <style>
+        .pattern-dots {
+            background-image: radial-gradient(currentColor 1px, transparent 1px);
+            background-size: calc(10 * 1px) calc(10 * 1px);
+        }
+        .pattern-size-2 {
+            background-size: calc(20 * 1px) calc(20 * 1px);
+        }
+    </style>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col bg-gradient-to-br from-off-white to-light-gray bg-fixed pattern-dots text-primary/5 pattern-size-2">
+    <!-- Navigation -->
+    <nav class="bg-primary text-white shadow-lg relative z-20 border-t-4 border-accent">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="{% url 'home' %}" class="text-2xl font-bold">VenueBook</a>
+
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="{% url 'home' %}" class="hover:text-accent transition">Home</a>
+                    <a href="{% url 'venue_list' %}" class="hover:text-accent transition">Venues</a>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff and user.venue_manager.is_approved %}
+                            <!-- Manager Navigation -->
+                            <a href="{% url 'manager_dashboard' %}" class="hover:text-accent transition">Dashboard</a>
+                            <a href="{% url 'manager_venues' %}" class="hover:text-accent transition">My Venues</a>
+                            <a href="{% url 'manager_bookings' %}" class="hover:text-accent transition">Bookings</a>
+                        {% else %}
+                            <!-- Regular User Navigation -->
+                            <a href="{% url 'user_dashboard' %}" class="hover:text-accent transition">Dashboard</a>
+                            <a href="{% url 'my_bookings' %}" class="hover:text-accent transition">My Bookings</a>
+                        {% endif %}
+                        <a href="#" onclick="document.getElementById('logout-form').submit(); return false;" class="hover:text-accent transition">Logout</a>
+
+                        <!-- User Profile Link with Avatar -->
+                        <a href="{% url 'my_profile' %}" class="flex items-center hover:text-accent transition">
+                            {% if user|has_profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}"
+                                     class="w-8 h-8 rounded-full object-cover border-2 border-white mr-2">
+                            {% else %}
+                                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center border-2 border-white mr-2">
+                                    <span class="text-primary font-bold text-sm">{{ user.username|slice:":1"|upper }}</span>
+                                </div>
+                            {% endif %}
+                            <span>{{ user.username }}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="hover:text-accent transition">Login</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden" x-data="{ open: false }">
+                    <button @click="open = !open" class="text-white focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Mobile menu -->
+                    <div x-show="open" @click.away="open = false" x-cloak
+                         class="absolute top-16 right-4 bg-primary rounded-md shadow-lg py-2 px-4 mt-2 w-48 z-50">
+                        <a href="{% url 'home' %}" class="block py-2 hover:text-accent transition">Home</a>
+                        <a href="{% url 'venue_list' %}" class="block py-2 hover:text-accent transition">Venues</a>
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff and user.venue_manager.is_approved %}
+                                <!-- Manager Navigation -->
+                                <a href="{% url 'manager_dashboard' %}" class="block py-2 hover:text-accent transition">Dashboard</a>
+                                <a href="{% url 'manager_venues' %}" class="block py-2 hover:text-accent transition">My Venues</a>
+                                <a href="{% url 'manager_bookings' %}" class="block py-2 hover:text-accent transition">Bookings</a>
+                            {% else %}
+                                <!-- Regular User Navigation -->
+                                <a href="{% url 'user_dashboard' %}" class="block py-2 hover:text-accent transition">Dashboard</a>
+                                <a href="{% url 'my_bookings' %}" class="block py-2 hover:text-accent transition">My Bookings</a>
+                            {% endif %}
+                            <a href="#" onclick="document.getElementById('logout-form').submit(); return false;" class="block py-2 hover:text-accent transition">Logout</a>
+
+                            <!-- User Profile Link with Avatar -->
+                            <a href="{% url 'my_profile' %}" class="flex items-center py-2 hover:text-accent transition">
+                                {% if user|has_profile_picture %}
+                                    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}"
+                                         class="w-6 h-6 rounded-full object-cover border-2 border-white mr-2">
+                                {% else %}
+                                    <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center border-2 border-white mr-2">
+                                        <span class="text-primary font-bold text-xs">{{ user.username|slice:":1"|upper }}</span>
+                                    </div>
+                                {% endif %}
+                                <span>My Profile</span>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="block py-2 hover:text-accent transition">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mx-auto px-4 mt-4">
+        {% for message in messages %}
+            <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-accent/20 text-accent{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-primary/20 text-primary{% endif %}"
+                 x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                <div class="flex justify-between items-center">
+                    <p>{{ message }}</p>
+                    <button @click="show = false" class="text-gray-500 hover:text-gray-700">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow relative z-10">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-white py-8 mt-auto shadow-inner relative z-20">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">VenueBook</h3>
+                    <p class="text-gray-300">Find and book the perfect venue for your next event.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="{% url 'home' %}" class="hover:text-accent transition">Home</a></li>
+                        <li><a href="{% url 'venue_list' %}" class="hover:text-accent transition">Venues</a></li>
+                        {% if user.is_authenticated %}
+                            {% if user.is_staff and user.venue_manager.is_approved %}
+                                <!-- Manager Links -->
+                                <li><a href="{% url 'manager_dashboard' %}" class="hover:text-accent transition">Dashboard</a></li>
+                                <li><a href="{% url 'manager_venues' %}" class="hover:text-accent transition">My Venues</a></li>
+                            {% else %}
+                                <!-- Regular User Links -->
+                                <li><a href="{% url 'user_dashboard' %}" class="hover:text-accent transition">Dashboard</a></li>
+                                <li><a href="{% url 'my_bookings' %}" class="hover:text-accent transition">My Bookings</a></li>
+                            {% endif %}
+                            <li><a href="{% url 'my_profile' %}" class="hover:text-accent transition">My Profile</a></li>
+                        {% else %}
+                            <li><a href="{% url 'login' %}" class="hover:text-accent transition">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                    <p class="text-gray-300">Email: info@venuebook.com</p>
+                    <p class="text-gray-300">Phone: (123) 456-7890</p>
+                </div>
+            </div>
+            <div class="border-t border-accent/30 mt-8 pt-6 text-center text-light-gray">
+                <p>&copy; {% now "Y" %} VenueBook. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% include 'logout_form.html' %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

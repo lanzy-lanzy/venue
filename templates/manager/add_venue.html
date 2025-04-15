@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Venue - VenueBook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#06113C',
+                        accent: '#FF8C32',
+                        'light-gray': '#DDDDDD',
+                        'off-white': '#EEEEEE',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            background-image:
+                linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+    </style>
+
+    {% include 'manager/components/sidebar_styles.html' %}
+
+    {% include 'manager/components/dashboard_styles.html' %}
+
+    {% include 'manager/components/button_styles.html' %}
+</head>
+<body>
+<div class="dashboard-container">
+    {% with active_page='venues' %}
+        {% include 'manager/components/sidebar.html' %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="p-8">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-primary">Add New Venue</h1>
+            <a href="{% url 'manager_venues' %}" class="btn-secondary flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Venues
+            </a>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h2 class="text-xl font-semibold text-primary">Venue Information</h2>
+            </div>
+            <div class="p-6">
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="bg-red-50 border border-red-200 text-red-800 rounded-md p-4 mb-6">
+                        <h3 class="font-semibold mb-2">Please correct the following errors:</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-gray-700 font-medium mb-2">Venue Name</label>
+                            {{ form.name }}
+                            {% if form.name.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.name.help_text }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.address.id_for_label }}" class="block text-gray-700 font-medium mb-2">Address</label>
+                            {{ form.address }}
+                            {% if form.address.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.address.help_text }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.capacity.id_for_label }}" class="block text-gray-700 font-medium mb-2">Capacity</label>
+                            {{ form.capacity }}
+                            {% if form.capacity.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.capacity.help_text }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.hourly_rate.id_for_label }}" class="block text-gray-700 font-medium mb-2">Hourly Rate ($)</label>
+                            {{ form.hourly_rate }}
+                            {% if form.hourly_rate.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.hourly_rate.help_text }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.status.id_for_label }}" class="block text-gray-700 font-medium mb-2">Status</label>
+                            {{ form.status }}
+                            {% if form.status.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.status.help_text }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.categories.id_for_label }}" class="block text-gray-700 font-medium mb-2">Categories</label>
+                            {{ form.categories }}
+                            {% if form.categories.help_text %}
+                            <p class="text-gray-500 text-sm mt-1">{{ form.categories.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.description.id_for_label }}" class="block text-gray-700 font-medium mb-2">Description</label>
+                        {{ form.description }}
+                        {% if form.description.help_text %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.description.help_text }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.image.id_for_label }}" class="block text-gray-700 font-medium mb-2">Venue Image</label>
+                        {{ form.image }}
+                        {% if form.image.help_text %}
+                        <p class="text-gray-500 text-sm mt-1">{{ form.image.help_text }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <a href="{% url 'manager_venues' %}" class="btn-secondary">Cancel</a>
+                        <button type="submit" class="btn-primary">Create Venue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Venue Tips -->
+        <div class="dashboard-card p-6 mt-8">
+            <h3 class="text-lg font-semibold mb-4 text-primary">Venue Creation Tips</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-start">
+                    <svg class="h-5 w-5 text-accent mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-gray-600 text-sm">Add a detailed description to help customers understand what your venue offers.</p>
+                </div>
+
+                <div class="flex items-start">
+                    <svg class="h-5 w-5 text-accent mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-gray-600 text-sm">Upload a high-quality image that showcases your venue at its best.</p>
+                </div>
+
+                <div class="flex items-start">
+                    <svg class="h-5 w-5 text-accent mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-gray-600 text-sm">Select relevant categories to help customers find your venue more easily.</p>
+                </div>
+
+                <div class="flex items-start">
+                    <svg class="h-5 w-5 text-accent mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-gray-600 text-sm">After creating your venue, don't forget to add time slots to make it available for booking.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

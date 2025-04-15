@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}VenueBook - Find and Book Perfect Venues{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-primary text-white py-16 rounded-lg shadow-lg mb-12">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Find Your Perfect Venue</h1>
+        <p class="text-xl mb-8">Book venues for conferences, weddings, parties, and more.</p>
+        <a href="{% url 'venue_list' %}" class="bg-accent text-white hover:bg-accent/80 transition px-6 py-3 rounded-lg font-semibold text-lg inline-block">Browse Venues</a>
+    </div>
+</section>
+
+<!-- Featured Venues Section -->
+<section class="mb-12">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-6 text-primary">Featured Venues</h2>
+
+        {% if featured_venues %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for venue in featured_venues %}
+            <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden hover:shadow-lg transition">
+                {% load svg_tags %}
+                {% if venue.image %}
+                <img src="{{ venue.image.url }}" alt="{{ venue.name }}" class="w-full h-48 object-cover">
+                {% else %}
+                <div class="w-full h-48 bg-light-gray/30 flex items-center justify-center">
+                    <div class="w-24 h-24 text-accent">
+                        {% venue_icon venue %}
+                    </div>
+                </div>
+                {% endif %}
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold mb-2 text-primary">{{ venue.name }}</h3>
+                    <p class="text-gray-600 mb-2 truncate">{{ venue.address }}</p>
+                    <p class="text-accent font-bold mb-3">${{ venue.hourly_rate }}/hour</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Capacity: {{ venue.capacity }}</span>
+                        <a href="{% url 'venue_detail' venue.id %}" class="text-accent hover:text-accent/80 font-medium">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-600">No featured venues available at the moment.</p>
+        {% endif %}
+
+        <div class="text-center mt-8">
+            <a href="{% url 'venue_list' %}" class="text-accent hover:text-accent/80 font-semibold">View All Venues →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="mb-12">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-6 text-primary">Browse by Category</h2>
+
+        {% if categories %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {% load svg_tags %}
+            {% for category in categories %}
+            <a href="{% url 'venue_list' %}?category={{ category.id }}" class="bg-primary/5 hover:bg-primary/10 transition rounded-lg p-6 text-center">
+                <div class="w-16 h-16 mx-auto mb-3 text-accent">
+                    {% category_icon category.name %}
+                </div>
+                <h3 class="text-xl font-semibold text-primary">{{ category.name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-600">No categories available at the moment.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="mb-12 bg-light-gray/30 py-12 rounded-lg border border-light-gray/50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-8 text-center text-primary">How It Works</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center bg-white p-6 rounded-lg shadow-sm border border-light-gray/30">
+                <div class="bg-accent text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">1</div>
+                <h3 class="text-xl font-semibold mb-2 text-primary">Find a Venue</h3>
+                <p class="text-gray-600">Browse our selection of venues and find the perfect one for your event.</p>
+            </div>
+
+            <div class="text-center bg-white p-6 rounded-lg shadow-sm border border-light-gray/30">
+                <div class="bg-accent text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">2</div>
+                <h3 class="text-xl font-semibold mb-2 text-primary">Book a Time Slot</h3>
+                <p class="text-gray-600">Select an available time slot that works for your schedule.</p>
+            </div>
+
+            <div class="text-center bg-white p-6 rounded-lg shadow-sm border border-light-gray/30">
+                <div class="bg-accent text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">3</div>
+                <h3 class="text-xl font-semibold mb-2 text-primary">Confirm & Enjoy</h3>
+                <p class="text-gray-600">Receive confirmation and enjoy your event at the perfect venue.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-primary text-white py-12 rounded-lg shadow-lg border-t-4 border-accent">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">Ready to Book Your Venue?</h2>
+        <p class="text-xl mb-6">Find the perfect venue for your next event today.</p>
+        <a href="{% url 'venue_list' %}" class="bg-accent text-white hover:bg-accent/80 transition px-6 py-3 rounded-lg font-semibold text-lg inline-block">Browse Venues</a>
+    </div>
+</section>
+{% endblock %}

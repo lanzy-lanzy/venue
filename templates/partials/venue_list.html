@@ -1,0 +1,70 @@
+{% if venues %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for venue in venues %}
+    <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden hover:shadow-lg transition">
+        <div class="flex flex-col md:flex-row">
+            {% load svg_tags %}
+            {% if venue.image %}
+            <div class="md:w-1/3">
+                <img src="{{ venue.image.url }}" alt="{{ venue.name }}" class="w-full h-full object-cover">
+            </div>
+            {% else %}
+            <div class="md:w-1/3 bg-light-gray/30 flex items-center justify-center h-40 md:h-full">
+                <div class="w-24 h-24 text-accent">
+                    {% venue_icon venue %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="p-4 md:w-2/3">
+                <h3 class="text-xl font-semibold mb-2 text-primary">{{ venue.name }}</h3>
+                <p class="text-gray-600 mb-2 text-sm">{{ venue.address }}</p>
+                <p class="text-accent font-bold mb-2">${{ venue.hourly_rate }}/hour</p>
+
+                <div class="flex flex-wrap gap-2 mb-3">
+                    {% for category in venue.categories.all %}
+                    <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded">{{ category.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Capacity: {{ venue.capacity }}</span>
+                    <a href="{% url 'venue_detail' venue.id %}" class="bg-accent text-white py-1 px-3 rounded hover:bg-accent/80 transition text-sm">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if venues.paginator %}
+<div class="mt-8 flex justify-center">
+    <div class="inline-flex rounded-md shadow-sm">
+        {% if venues.has_previous %}
+        <a href="?page={{ venues.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}{% if min_capacity %}&min_capacity={{ min_capacity }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}"
+           class="px-4 py-2 text-sm font-medium text-primary bg-white border border-light-gray rounded-l-md hover:bg-light-gray/30">
+            Previous
+        </a>
+        {% endif %}
+
+        <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-light-gray {% if not venues.has_previous %}rounded-l-md{% endif %} {% if not venues.has_next %}rounded-r-md{% endif %}">
+            Page {{ venues.number }} of {{ venues.paginator.num_pages }}
+        </span>
+
+        {% if venues.has_next %}
+        <a href="?page={{ venues.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}{% if min_capacity %}&min_capacity={{ min_capacity }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}"
+           class="px-4 py-2 text-sm font-medium text-primary bg-white border border-light-gray rounded-r-md hover:bg-light-gray/30">
+            Next
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="bg-white rounded-lg shadow-md border border-light-gray/50 p-8 text-center">
+    <h3 class="text-xl font-semibold mb-2 text-primary">No venues found</h3>
+    <p class="text-gray-600 mb-4">Try adjusting your search filters or browse all venues.</p>
+    <a href="{% url 'venue_list' %}" class="bg-accent text-white py-2 px-4 rounded-md hover:bg-accent/80 transition">View All Venues</a>
+</div>
+{% endif %}
