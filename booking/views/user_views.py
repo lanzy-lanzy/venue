@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.utils import timezone
+from django.http import HttpResponse, JsonResponse
 from booking.forms import UserProfileForm, RegistrationForm
-from booking.models import Booking, Venue
+from booking.models import Booking, Venue, UserProfile
 
 
 @login_required
@@ -126,3 +127,35 @@ def register(request):
         'form': form,
     }
     return render(request, 'auth/register.html', context)
+
+
+@login_required
+def update_profile_picture(request):
+    """
+    View for updating user profile picture via AJAX.
+    """
+    if request.method == 'POST' and request.FILES.get('profile_picture'):
+        # Get the user's profile or create one if it doesn't exist
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+        # Update the profile picture
+        profile.profile_picture = request.FILES['profile_picture']
+        profile.save()
+
+        # Return success response
+        response = HttpResponse('Success')
+        response['HX-Redirect'] = request.META.get('HTTP_REFERER', '/')
+        return response
+
+    # Return error response
+    return HttpResponse('Error: No file uploaded', status=400)
+
+
+@login_required
+def logout_view(request):
+    """
+    View for logging out users.
+    """
+    logout(request)
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('home')

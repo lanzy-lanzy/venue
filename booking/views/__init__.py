@@ -2,7 +2,7 @@ from .home import home
 from .venue_views import venue_list, venue_detail
 from .booking_views import book_venue, booking_detail, my_bookings, cancel_booking
 from .htmx_views import get_available_slots, venue_edit_modal, venue_add_modal
-from .user_views import edit_profile, my_profile, register, user_dashboard
+from .user_views import edit_profile, my_profile, register, user_dashboard, update_profile_picture, logout_view
 from .auth_views import CustomLoginView
 from .manager_views import (
     manager_dashboard,
@@ -30,6 +30,8 @@ __all__ = [
     'my_profile',
     'register',
     'user_dashboard',
+    'update_profile_picture',
+    'logout_view',
     'CustomLoginView',
     'manager_dashboard',
     'manager_venues',

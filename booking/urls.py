@@ -18,6 +18,8 @@ urlpatterns = [
     path('dashboard/', views.user_dashboard, name='user_dashboard'),
     path('profile/', views.my_profile, name='my_profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/update-picture/', views.update_profile_picture, name='update_profile_picture'),
+    path('logout/', views.logout_view, name='custom_logout'),
 
     # HTMX endpoints
     path('venues/<int:venue_id>/available-slots/', views.get_available_slots, name='get_available_slots'),

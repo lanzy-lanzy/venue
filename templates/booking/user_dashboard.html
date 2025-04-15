@@ -26,22 +26,22 @@
     <style>
         body {
             background-color: #f5f5f5;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
             background-size: 20px 20px;
             font-family: 'Inter', sans-serif;
         }
-        
+
         .dashboard-container {
             display: grid;
             grid-template-columns: 280px 1fr;
             min-height: 100vh;
         }
     </style>
-    
+
     {% include 'booking/components/user_sidebar_styles.html' %}
-    
+
     {% include 'booking/components/user_dashboard_styles.html' %}
 </head>
 <body>
@@ -49,7 +49,7 @@
         {% with active_page='dashboard' %}
             {% include 'booking/components/user_sidebar.html' %}
         {% endwith %}
-        
+
         <!-- Main Content -->
         <main class="p-8">
             <!-- Page Header -->
@@ -59,15 +59,67 @@
                     Last updated: {% now "F j, Y, g:i a" %}
                 </div>
             </div>
-            
+
             {% include 'booking/components/user_stats_cards.html' %}
-            
+
             {% include 'booking/components/upcoming_bookings.html' %}
-            
+
             {% include 'booking/components/recent_bookings.html' %}
-            
+
             {% include 'booking/components/recommended_venues.html' %}
         </main>
     </div>
+{% include 'partials/profile_picture_modal.html' %}
+
+<script>
+    // Function to open the profile picture modal
+    function openProfilePictureModal() {
+        document.getElementById('profile-picture-modal').style.display = 'flex';
+    }
+
+    // Function to close a modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Function to submit profile picture form
+    function submitProfilePictureForm(event, form) {
+        event.preventDefault();
+
+        // Show loading spinner
+        const spinner = document.getElementById('form-spinner');
+        if (spinner) spinner.style.opacity = '1';
+
+        // Submit form using fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form)
+        })
+        .then(response => {
+            if (response.headers.get('HX-Redirect')) {
+                // Close modal
+                closeModal('profile-picture-modal');
+                // Reload page
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                // If there are errors, handle them
+                console.error('Error updating profile picture');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+        });
+    }
+
+    // Add click event listener to close modals when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileModal = document.getElementById('profile-picture-modal');
+        profileModal.addEventListener('click', function(event) {
+            if (event.target === profileModal) {
+                closeModal('profile-picture-modal');
+            }
+        });
+    });
+</script>
 </body>
 </html>
