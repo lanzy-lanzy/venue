@@ -2,6 +2,64 @@
 
 {% block title %}My Profile - VenueBook{% endblock %}
 
+{% block extra_head %}
+<style>
+    /* Modal Styles */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        max-width: 90%;
+        width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        background-color: #06113C;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 4px solid #FF8C32;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    /* HTMX Indicator */
+    .htmx-indicator {
+        opacity: 0;
+        transition: opacity 200ms ease-in;
+    }
+    .htmx-request .htmx-indicator {
+        opacity: 1;
+    }
+    .htmx-request.htmx-indicator {
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden mb-8">
@@ -16,16 +74,24 @@
             <div class="flex flex-col md:flex-row gap-8">
                 <!-- Profile Picture -->
                 <div class="md:w-1/3 flex flex-col items-center">
-                    {% if profile.profile_picture %}
-                    <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}"
-                         class="w-48 h-48 object-cover rounded-full border-4 border-accent/20">
-                    {% else %}
-                    <div class="w-48 h-48 bg-light-gray rounded-full flex items-center justify-center border-4 border-accent/20">
-                        <svg class="w-24 h-24 text-accent" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                        </svg>
+                    <div class="relative group cursor-pointer" onclick="openProfilePictureModal()">
+                        {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}"
+                             class="w-48 h-48 object-cover rounded-full border-4 border-accent/20">
+                        {% else %}
+                        <div class="w-48 h-48 bg-light-gray rounded-full flex items-center justify-center border-4 border-accent/20">
+                            <svg class="w-24 h-24 text-accent" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <svg class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
                     </div>
-                    {% endif %}
 
                     <div class="mt-4 text-center">
                         <h3 class="text-xl font-semibold">{{ profile.user.get_full_name|default:profile.user.username }}</h3>
@@ -180,4 +246,81 @@
         </div>
     </div>
 </div>
+
+{% include 'partials/user_profile_picture_modal.html' %}
+
+<script>
+    // Function to open the profile picture modal
+    function openProfilePictureModal() {
+        var modal = document.getElementById('profile-picture-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            console.error('Profile picture modal not found');
+        }
+    }
+
+    // Function to close a modal
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        } else {
+            console.error('Modal not found: ' + modalId);
+        }
+    }
+
+    // Function to submit profile picture form
+    function submitProfilePictureForm(event, form) {
+        event.preventDefault();
+        console.log('Submitting profile picture form');
+
+        // Show loading spinner
+        const spinner = document.getElementById('form-spinner');
+        if (spinner) spinner.style.opacity = '1';
+
+        // Create a FormData object from the form
+        const formData = new FormData(form);
+
+        // Submit form using fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (response.ok) {
+                // Close modal
+                closeModal('profile-picture-modal');
+                // Reload page
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                // If there are errors, handle them
+                console.error('Error updating profile picture');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+        });
+    }
+
+    // Add click event listener to close modals when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM content loaded');
+        const profileModal = document.getElementById('profile-picture-modal');
+        if (profileModal) {
+            console.log('Profile modal found');
+            profileModal.addEventListener('click', function(event) {
+                if (event.target === profileModal) {
+                    closeModal('profile-picture-modal');
+                }
+            });
+        } else {
+            console.error('Profile modal not found');
+        }
+    });
+</script>
 {% endblock %}

@@ -15,15 +15,11 @@
                 {% csrf_token %}
 
                 <div class="flex flex-col items-center mb-6">
-                    {% if user.profile.profile_picture %}
-                    <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="w-32 h-32 rounded-full object-cover border-4 border-accent/20 mb-4">
-                    {% elif user.is_staff and user.venue_manager %}
-                    <div class="w-32 h-32 bg-accent rounded-full flex items-center justify-center text-white font-bold text-4xl mb-4">
-                        {{ user.get_full_name|default:user.username|slice:":1"|upper }}
-                    </div>
+                    {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}" class="w-32 h-32 rounded-full object-cover border-4 border-accent/20 mb-4">
                     {% else %}
                     <div class="w-32 h-32 bg-accent rounded-full flex items-center justify-center text-white font-bold text-4xl mb-4">
-                        {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+                        {{ profile.user.get_full_name|default:profile.user.username|slice:":1"|upper }}
                     </div>
                     {% endif %}
 

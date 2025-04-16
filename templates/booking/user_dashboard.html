@@ -69,12 +69,18 @@
             {% include 'booking/components/recommended_venues.html' %}
         </main>
     </div>
-{% include 'partials/profile_picture_modal.html' %}
+{% include 'partials/user_profile_picture_modal.html' %}
+{% include 'partials/edit_profile_modal.html' %}
 
 <script>
     // Function to open the profile picture modal
     function openProfilePictureModal() {
         document.getElementById('profile-picture-modal').style.display = 'flex';
+    }
+
+    // Function to open the edit profile modal
+    function openEditProfileModal() {
+        document.getElementById('edit-profile-modal').style.display = 'flex';
     }
 
     // Function to close a modal
@@ -111,14 +117,59 @@
         });
     }
 
+    // Function to submit edit profile form
+    function submitEditProfileForm(event, form) {
+        event.preventDefault();
+
+        // Show loading spinner
+        const spinner = document.getElementById('form-spinner');
+        if (spinner) spinner.style.opacity = '1';
+
+        // Submit form using fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Close modal
+                closeModal('edit-profile-modal');
+                // Reload page
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                // If there are errors, handle them
+                console.error('Error updating profile');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+        });
+    }
+
     // Add click event listener to close modals when clicking outside
     document.addEventListener('DOMContentLoaded', function() {
+        // Profile picture modal
         const profileModal = document.getElementById('profile-picture-modal');
-        profileModal.addEventListener('click', function(event) {
-            if (event.target === profileModal) {
-                closeModal('profile-picture-modal');
-            }
-        });
+        if (profileModal) {
+            profileModal.addEventListener('click', function(event) {
+                if (event.target === profileModal) {
+                    closeModal('profile-picture-modal');
+                }
+            });
+        }
+
+        // Edit profile modal
+        const editProfileModal = document.getElementById('edit-profile-modal');
+        if (editProfileModal) {
+            editProfileModal.addEventListener('click', function(event) {
+                if (event.target === editProfileModal) {
+                    closeModal('edit-profile-modal');
+                }
+            });
+        }
     });
 </script>
 </body>

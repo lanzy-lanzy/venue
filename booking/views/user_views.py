@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.utils import timezone
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from booking.forms import UserProfileForm, RegistrationForm
 from booking.models import Booking, Venue, UserProfile
 
@@ -23,9 +23,33 @@ def edit_profile(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
-            form.save()
+            # Save the form data
+            user_profile = form.save(commit=False)
+
+            # Update the User model fields
+            user = request.user
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            user.save()
+
+            # Save the profile
+            user_profile.save()
+
             messages.success(request, 'Your profile has been updated successfully!')
-            return redirect('my_profile')
+
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                # Return JSON response for AJAX requests
+                return JsonResponse({'success': True, 'message': 'Profile updated successfully'})
+            else:
+                # Return redirect response for non-AJAX requests
+                return redirect('my_profile')
+        else:
+            # If the form is invalid
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                # Return JSON response with errors for AJAX requests
+                return JsonResponse({'success': False, 'errors': form.errors}, status=400)
     else:
         form = UserProfileForm(instance=profile)
 
@@ -132,23 +156,36 @@ def register(request):
 @login_required
 def update_profile_picture(request):
     """
-    View for updating user profile picture via AJAX.
+    View for updating user profile picture via AJAX or form submission.
     """
+    # Check if this is a direct GET request (not AJAX)
+    if request.method == 'GET':
+        # Redirect to the edit profile page
+        return redirect('edit_profile')
+
     if request.method == 'POST' and request.FILES.get('profile_picture'):
         # Get the user's profile or create one if it doesn't exist
-        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
 
         # Update the profile picture
         profile.profile_picture = request.FILES['profile_picture']
         profile.save()
 
-        # Return success response
-        response = HttpResponse('Success')
-        response['HX-Redirect'] = request.META.get('HTTP_REFERER', '/')
-        return response
+        # Check if it's an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # Return JSON response for AJAX requests
+            return JsonResponse({'success': True, 'message': 'Profile picture updated successfully'})
+        else:
+            # Return redirect response for non-AJAX requests
+            messages.success(request, 'Profile picture updated successfully!')
+            return redirect(request.META.get('HTTP_REFERER', '/'))
 
     # Return error response
-    return HttpResponse('Error: No file uploaded', status=400)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': False, 'message': 'Error: No file uploaded'}, status=400)
+    else:
+        messages.error(request, 'Error: No file uploaded')
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 @login_required

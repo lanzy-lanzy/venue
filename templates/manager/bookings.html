@@ -229,5 +229,57 @@
 </div>
     </main>
 </div>
+{% include 'partials/profile_picture_modal.html' %}
+
+<script>
+    // Function to open the profile picture modal
+    function openProfilePictureModal() {
+        document.getElementById('profile-picture-modal').style.display = 'flex';
+    }
+
+    // Function to close a modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Function to submit profile picture form
+    function submitProfilePictureForm(event, form) {
+        event.preventDefault();
+
+        // Show loading spinner
+        const spinner = document.getElementById('form-spinner');
+        if (spinner) spinner.style.opacity = '1';
+
+        // Submit form using fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form)
+        })
+        .then(response => {
+            if (response.headers.get('HX-Redirect')) {
+                // Close modal
+                closeModal('profile-picture-modal');
+                // Reload page
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                // If there are errors, handle them
+                console.error('Error updating profile picture');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+        });
+    }
+
+    // Add click event listener to close modals when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileModal = document.getElementById('profile-picture-modal');
+        profileModal.addEventListener('click', function(event) {
+            if (event.target === profileModal) {
+                closeModal('profile-picture-modal');
+            }
+        });
+    });
+</script>
 </body>
 </html>

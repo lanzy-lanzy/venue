@@ -1,0 +1,116 @@
+{% load static %}
+
+<div id="edit-profile-modal" class="modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; z-index: 50;">
+    <div class="modal-content" onclick="event.stopPropagation();" style="max-width: 800px; background-color: white; border-radius: 0.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); max-width: 90%; width: 800px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="background-color: #06113C; color: white; padding: 1rem 1.5rem; border-top-left-radius: 0.5rem; border-top-right-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #FF8C32;">
+            <h2 class="text-xl font-semibold">Edit Profile</h2>
+            <button onclick="closeModal('edit-profile-modal')" class="text-white hover:text-accent transition">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding: 1.5rem;">
+            <form method="post" action="{% url 'edit_profile' %}" enctype="multipart/form-data" id="edit-profile-form" onsubmit="submitEditProfileForm(event, this);">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Personal Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">Personal Information</h3>
+
+                        <div class="mb-4">
+                            <label for="id_first_name" class="block text-gray-700 font-medium mb-2">First Name</label>
+                            <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default:profile.user.first_name }}"
+                                   class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_last_name" class="block text-gray-700 font-medium mb-2">Last Name</label>
+                            <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default:profile.user.last_name }}"
+                                   class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_email" class="block text-gray-700 font-medium mb-2">Email</label>
+                            <input type="email" name="email" id="id_email" value="{{ form.email.value|default:profile.user.email }}"
+                                   class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_phone" class="block text-gray-700 font-medium mb-2">Phone</label>
+                            <input type="text" name="phone" id="id_phone" value="{{ form.phone.value|default:profile.phone }}"
+                                   class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_address" class="block text-gray-700 font-medium mb-2">Address</label>
+                            <input type="text" name="address" id="id_address" value="{{ form.address.value|default:profile.address }}"
+                                   class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+                    </div>
+
+                    <!-- Profile Picture and Preferences -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">Profile Picture</h3>
+
+                        <div class="mb-6">
+                            <div class="flex flex-col items-center mb-4">
+                                {% if profile.profile_picture %}
+                                <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}"
+                                     class="w-32 h-32 object-cover rounded-full border-4 border-accent/20 mb-2">
+                                <p class="text-sm text-gray-500">Current profile picture</p>
+                                {% else %}
+                                <div class="w-32 h-32 bg-light-gray rounded-full flex items-center justify-center border-4 border-accent/20 mb-2">
+                                    <svg class="w-16 h-16 text-accent" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-sm text-gray-500">No profile picture</p>
+                                {% endif %}
+                            </div>
+
+                            <label for="id_profile_picture" class="block text-gray-700 font-medium mb-2">Upload New Picture</label>
+                            <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*"
+                                   class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                            <p class="text-sm text-gray-500 mt-1">Upload a square image for best results. Max size: 5MB.</p>
+                        </div>
+
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">Booking Preferences</h3>
+
+                        <div class="mb-4">
+                            <label for="id_preferred_payment_method" class="block text-gray-700 font-medium mb-2">Preferred Payment Method</label>
+                            <input type="text" name="preferred_payment_method" id="id_preferred_payment_method"
+                                   value="{{ form.preferred_payment_method.value|default:profile.preferred_payment_method }}"
+                                   class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent"
+                                   placeholder="e.g. Credit Card, PayPal, etc.">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_booking_preferences" class="block text-gray-700 font-medium mb-2">Booking Preferences</label>
+                            <textarea name="booking_preferences" id="id_booking_preferences" rows="3"
+                                      class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent"
+                                      placeholder="Any special requirements or preferences for your bookings">{{ form.booking_preferences.value|default:profile.booking_preferences }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="form-spinner" class="htmx-indicator flex justify-center mb-4" style="opacity: 0;">
+                    <svg class="animate-spin h-5 w-5 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal('edit-profile-modal')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-accent text-white rounded hover:bg-accent/90 transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -26,22 +26,22 @@
     <style>
         body {
             background-color: #f5f5f5;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
             background-size: 20px 20px;
             font-family: 'Inter', sans-serif;
         }
-        
+
         .dashboard-container {
             display: grid;
             grid-template-columns: 280px 1fr;
             min-height: 100vh;
         }
     </style>
-    
+
     {% include 'booking/components/user_sidebar_styles.html' %}
-    
+
     {% include 'booking/components/user_dashboard_styles.html' %}
 </head>
 <body>
@@ -49,7 +49,7 @@
         {% with active_page='bookings' %}
             {% include 'booking/components/user_sidebar.html' %}
         {% endwith %}
-        
+
         <!-- Main Content -->
         <main class="p-8">
             <!-- Page Header -->
@@ -62,13 +62,13 @@
                     Book New Venue
                 </a>
             </div>
-            
+
             <!-- All Bookings -->
             <div class="dashboard-card mb-8">
                 <div class="dashboard-card-header">
                     <h2 class="text-xl font-semibold text-primary">All Bookings</h2>
                 </div>
-                
+
                 {% if bookings %}
                 <div class="overflow-x-auto">
                     <table class="dashboard-table">
@@ -141,7 +141,7 @@
                 </div>
                 {% endif %}
             </div>
-            
+
             <!-- Booking Tips -->
             <div class="dashboard-card">
                 <div class="dashboard-card-header">
@@ -153,12 +153,12 @@
                             <h3 class="font-semibold text-primary mb-2">Early Booking</h3>
                             <p class="text-gray-700 text-sm">Book your venues early to ensure availability, especially for popular dates.</p>
                         </div>
-                        
+
                         <div class="bg-primary/5 p-4 rounded-lg border border-light-gray/30">
                             <h3 class="font-semibold text-primary mb-2">Check Details</h3>
                             <p class="text-gray-700 text-sm">Double-check venue capacity and amenities to ensure they meet your needs.</p>
                         </div>
-                        
+
                         <div class="bg-primary/5 p-4 rounded-lg border border-light-gray/30">
                             <h3 class="font-semibold text-primary mb-2">Cancellation Policy</h3>
                             <p class="text-gray-700 text-sm">
@@ -174,5 +174,108 @@
             </div>
         </main>
     </div>
+{% include 'partials/user_profile_picture_modal.html' %}
+{% include 'partials/edit_profile_modal.html' %}
+
+<script>
+    // Function to open the profile picture modal
+    function openProfilePictureModal() {
+        document.getElementById('profile-picture-modal').style.display = 'flex';
+    }
+
+    // Function to open the edit profile modal
+    function openEditProfileModal() {
+        document.getElementById('edit-profile-modal').style.display = 'flex';
+    }
+
+    // Function to close a modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Function to submit profile picture form
+    function submitProfilePictureForm(event, form) {
+        event.preventDefault();
+
+        // Show loading spinner
+        const spinner = document.getElementById('form-spinner');
+        if (spinner) spinner.style.opacity = '1';
+
+        // Submit form using fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form)
+        })
+        .then(response => {
+            if (response.headers.get('HX-Redirect')) {
+                // Close modal
+                closeModal('profile-picture-modal');
+                // Reload page
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                // If there are errors, handle them
+                console.error('Error updating profile picture');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+        });
+    }
+
+    // Function to submit edit profile form
+    function submitEditProfileForm(event, form) {
+        event.preventDefault();
+
+        // Show loading spinner
+        const spinner = document.getElementById('form-spinner');
+        if (spinner) spinner.style.opacity = '1';
+
+        // Submit form using fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Close modal
+                closeModal('edit-profile-modal');
+                // Reload page
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                // If there are errors, handle them
+                console.error('Error updating profile');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+        });
+    }
+
+    // Add click event listener to close modals when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        // Profile picture modal
+        const profileModal = document.getElementById('profile-picture-modal');
+        if (profileModal) {
+            profileModal.addEventListener('click', function(event) {
+                if (event.target === profileModal) {
+                    closeModal('profile-picture-modal');
+                }
+            });
+        }
+
+        // Edit profile modal
+        const editProfileModal = document.getElementById('edit-profile-modal');
+        if (editProfileModal) {
+            editProfileModal.addEventListener('click', function(event) {
+                if (event.target === editProfileModal) {
+                    closeModal('edit-profile-modal');
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
