@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.http import HttpResponseForbidden
 from booking.models import Venue, TimeSlot, Booking, Category, VenueManager
 from booking.forms import VenueForm, TimeSlotForm
 from booking.decorators import venue_manager_required
@@ -214,3 +215,120 @@ def manager_add_time_slot(request, venue_id):
         'venues': venues,
     }
     return render(request, 'manager/add_time_slot.html', context)
+
+
+@login_required
+@venue_manager_required
+def manager_booking_detail(request, booking_id):
+    """
+    View for displaying booking details for managers.
+    """
+    manager = request.user.venue_manager
+    venues = Venue.objects.filter(manager=manager)
+
+    # Get the booking and verify it belongs to one of the manager's venues
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    # Check if the booking belongs to one of the manager's venues
+    if booking.venue.manager != manager:
+        return HttpResponseForbidden("You don't have permission to view this booking.")
+
+    context = {
+        'booking': booking,
+        'venues': venues,
+    }
+    return render(request, 'manager/booking_detail.html', context)
+
+
+@login_required
+@venue_manager_required
+def manager_confirm_booking(request, booking_id):
+    """
+    View for confirming a pending booking.
+    """
+    manager = request.user.venue_manager
+
+    # Get the booking and verify it belongs to one of the manager's venues
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    # Check if the booking belongs to one of the manager's venues
+    if booking.venue.manager != manager:
+        return HttpResponseForbidden("You don't have permission to confirm this booking.")
+
+    # Check if the booking is pending
+    if booking.status != 'pending':
+        messages.error(request, 'Only pending bookings can be confirmed.')
+        return redirect('manager_bookings')
+
+    # Confirm the booking
+    booking.status = 'confirmed'
+    booking.save()
+
+    # Make sure the time slot is marked as unavailable
+    booking.time_slot.is_available = False
+    booking.time_slot.save()
+
+    messages.success(request, f'Booking #{booking.id} has been confirmed successfully.')
+    return redirect('manager_bookings')
+
+
+@login_required
+@venue_manager_required
+def manager_cancel_booking(request, booking_id):
+    """
+    View for cancelling a booking by a manager.
+    """
+    manager = request.user.venue_manager
+
+    # Get the booking and verify it belongs to one of the manager's venues
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    # Check if the booking belongs to one of the manager's venues
+    if booking.venue.manager != manager:
+        return HttpResponseForbidden("You don't have permission to cancel this booking.")
+
+    # Check if the booking is already cancelled
+    if booking.status == 'cancelled':
+        messages.error(request, 'This booking is already cancelled.')
+        return redirect('manager_bookings')
+
+    # If the booking was confirmed, make the time slot available again
+    if booking.status == 'confirmed':
+        booking.time_slot.is_available = True
+        booking.time_slot.save()
+
+    # Cancel the booking
+    booking.status = 'cancelled'
+    booking.save()
+
+    messages.success(request, f'Booking #{booking.id} has been cancelled successfully.')
+    return redirect('manager_bookings')
+
+
+@login_required
+@venue_manager_required
+def manager_delete_venue(request, venue_id):
+    """
+    View for deleting a venue.
+    """
+    manager = request.user.venue_manager
+    venue = get_object_or_404(Venue, id=venue_id, manager=manager)
+
+    # Check if there are any active bookings for this venue
+    active_bookings = Booking.objects.filter(
+        venue=venue,
+        status__in=['pending', 'confirmed']
+    ).exists()
+
+    if active_bookings:
+        messages.error(request, 'Cannot delete venue with active bookings. Please cancel or complete all bookings first.')
+        return redirect('manager_venues')
+
+    # Store venue name for success message
+    venue_name = venue.name
+
+    # Delete the venue
+    venue.delete()
+
+    messages.success(request, f'Venue "{venue_name}" has been deleted successfully.')
+    return redirect('manager_venues')

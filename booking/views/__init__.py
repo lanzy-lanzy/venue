@@ -11,7 +11,11 @@ from .manager_views import (
     manager_edit_venue,
     manager_bookings,
     manager_time_slots,
-    manager_add_time_slot
+    manager_add_time_slot,
+    manager_delete_venue,
+    manager_booking_detail,
+    manager_confirm_booking,
+    manager_cancel_booking
 )
 
 # Make all views available at the package level
@@ -39,5 +43,9 @@ __all__ = [
     'manager_edit_venue',
     'manager_bookings',
     'manager_time_slots',
-    'manager_add_time_slot'
+    'manager_add_time_slot',
+    'manager_delete_venue',
+    'manager_booking_detail',
+    'manager_confirm_booking',
+    'manager_cancel_booking'
 ]

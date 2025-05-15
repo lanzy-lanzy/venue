@@ -1,5 +1,67 @@
 <!-- My Venues -->
 <div class="mb-8">
+    <style>
+        .venue-action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .venue-action-btn.edit {
+            color: #4F46E5;
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+        .venue-action-btn.edit:hover {
+            background-color: rgba(79, 70, 229, 0.2);
+        }
+        .venue-action-btn.manage {
+            color: #0891B2;
+            background-color: rgba(8, 145, 178, 0.1);
+        }
+        .venue-action-btn.manage:hover {
+            background-color: rgba(8, 145, 178, 0.2);
+        }
+        .venue-action-btn.view {
+            color: #059669;
+            background-color: rgba(5, 150, 105, 0.1);
+        }
+        .venue-action-btn.view:hover {
+            background-color: rgba(5, 150, 105, 0.2);
+        }
+        .venue-action-btn.delete {
+            color: #DC2626;
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+        .venue-action-btn.delete:hover {
+            background-color: rgba(220, 38, 38, 0.2);
+        }
+    </style>
+
+    <script>
+        function confirmDelete(venueId, venueName) {
+            if (confirm(`Are you sure you want to delete "${venueName}"? This action cannot be undone.`)) {
+                window.location.href = `/manager/venues/${venueId}/delete/`;
+            }
+        }
+
+        function openModal(venueId) {
+            // Fetch the form content
+            fetch(`/manager/venues/${venueId}/edit-modal/`)
+                .then(response => response.text())
+                .then(html => {
+                    // Update modal content
+                    document.getElementById('edit-modal-content').innerHTML = html;
+                    // Show the modal
+                    document.getElementById('edit-modal').style.display = 'flex';
+                })
+                .catch(error => {
+                    console.error('Error loading modal content:', error);
+                });
+        }
+    </script>
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-semibold text-primary">My Venues</h2>
         <button onclick="openAddModal()" class="add-venue-btn">
@@ -43,12 +105,35 @@
                     <div class="text-accent font-medium">${{ venue.hourly_rate }}/hr</div>
                 </div>
 
-                <a href="{% url 'venue_detail' venue.id %}" class="text-accent hover:text-accent/80 text-sm font-medium flex items-center">
-                    View Details
-                    <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                    </svg>
-                </a>
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <button
+                        class="venue-action-btn edit"
+                        onclick="openModal({{ venue.id }}); return false;">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Edit
+                    </button>
+                    <a href="{% url 'manager_time_slots' venue.id %}" class="venue-action-btn manage">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Time Slots
+                    </a>
+                    <a href="{% url 'venue_detail' venue.id %}" class="venue-action-btn view">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        View
+                    </a>
+                    <a href="#" onclick="confirmDelete({{ venue.id }}, '{{ venue.name|escapejs }}'); return false;" class="venue-action-btn delete">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Delete
+                    </a>
+                </div>
             </div>
         </div>
         {% endfor %}

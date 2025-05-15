@@ -38,6 +38,41 @@
             grid-template-columns: 280px 1fr;
             min-height: 100vh;
         }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+            margin-bottom: 5px;
+        }
+
+        .tooltip:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+            transform: translateX(-50%) rotate(180deg);
+            margin-bottom: 0px;
+            z-index: 10;
+        }
     </style>
 
     {% include 'manager/components/sidebar_styles.html' %}
@@ -190,18 +225,25 @@
                     <td>
                         <div class="flex space-x-2">
                             {% if booking.status == 'pending' %}
-                            <a href="#" class="text-green-600 hover:text-green-800">
+                            <a href="#" onclick="confirmAction('confirm', {{ booking.id }}); return false;" class="text-green-600 hover:text-green-800 tooltip" data-tooltip="Confirm Booking">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </a>
                             {% endif %}
-                            <a href="#" class="text-accent hover:text-accent/80">
+                            <a href="{% url 'manager_booking_detail' booking.id %}" class="text-accent hover:text-accent/80 tooltip" data-tooltip="View Details">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                             </a>
+                            {% if booking.status != 'cancelled' %}
+                            <a href="#" onclick="confirmAction('cancel', {{ booking.id }}); return false;" class="text-red-600 hover:text-red-800 tooltip" data-tooltip="Cancel Booking">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </a>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>
@@ -232,6 +274,24 @@
 {% include 'partials/profile_picture_modal.html' %}
 
 <script>
+    // Function to confirm booking actions
+    function confirmAction(action, bookingId) {
+        let message = '';
+        let url = '';
+
+        if (action === 'confirm') {
+            message = 'Are you sure you want to confirm this booking?';
+            url = `/manager/bookings/${bookingId}/confirm/`;
+        } else if (action === 'cancel') {
+            message = 'Are you sure you want to cancel this booking?';
+            url = `/manager/bookings/${bookingId}/cancel/`;
+        }
+
+        if (confirm(message)) {
+            window.location.href = url;
+        }
+    }
+
     // Function to open the profile picture modal
     function openProfilePictureModal() {
         document.getElementById('profile-picture-modal').style.display = 'flex';

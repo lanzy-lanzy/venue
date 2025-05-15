@@ -31,7 +31,11 @@ urlpatterns = [
     path('manager/venues/', views.manager_venues, name='manager_venues'),
     path('manager/venues/add/', views.manager_add_venue, name='manager_add_venue'),
     path('manager/venues/<int:venue_id>/edit/', views.manager_edit_venue, name='manager_edit_venue'),
+    path('manager/venues/<int:venue_id>/delete/', views.manager_delete_venue, name='manager_delete_venue'),
     path('manager/bookings/', views.manager_bookings, name='manager_bookings'),
+    path('manager/bookings/<int:booking_id>/confirm/', views.manager_confirm_booking, name='manager_confirm_booking'),
+    path('manager/bookings/<int:booking_id>/cancel/', views.manager_cancel_booking, name='manager_cancel_booking'),
+    path('manager/bookings/<int:booking_id>/', views.manager_booking_detail, name='manager_booking_detail'),
     path('manager/venues/<int:venue_id>/time-slots/', views.manager_time_slots, name='manager_time_slots'),
     path('manager/venues/<int:venue_id>/time-slots/add/', views.manager_add_time_slot, name='manager_add_time_slot'),
 ]

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details - VenueBook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#06113C',
+                        accent: '#FF8C32',
+                        'light-gray': '#DDDDDD',
+                        'off-white': '#EEEEEE',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            background-image:
+                linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+    </style>
+
+    {% include 'manager/components/sidebar_styles.html' %}
+    {% include 'manager/components/dashboard_styles.html' %}
+</head>
+<body>
+
+<div class="dashboard-container">
+    {% with active_page='bookings' %}
+        {% include 'manager/components/sidebar.html' %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="p-8">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center">
+                <a href="{% url 'manager_bookings' %}" class="text-accent hover:text-accent/80 mr-3">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </a>
+                <h1 class="text-3xl font-bold text-primary">Booking Details</h1>
+            </div>
+            <div class="text-sm text-gray-600 flex items-center">
+                <svg class="h-4 w-4 mr-1 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Last updated: {% now "F j, Y, g:i a" %}
+            </div>
+        </div>
+
+        <!-- Booking Details Card -->
+        <div class="dashboard-card overflow-hidden shadow-lg mb-6">
+            <div class="dashboard-card-header bg-gradient-to-r from-primary/90 to-primary">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Booking #{{ booking.id }}
+                </h2>
+                <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                    {{ booking.status|title }}
+                </span>
+            </div>
+
+            <div class="p-6 bg-gradient-to-b from-white to-off-white/50">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Booking Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-primary">Booking Information</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Booking ID</p>
+                                    <p class="font-medium">#{{ booking.id }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Booking Date</p>
+                                    <p class="font-medium">{{ booking.booking_date|date:"F j, Y, g:i A" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-gray-600 text-sm">Status</p>
+                                <p class="font-medium">
+                                    <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                                        {{ booking.status|title }}
+                                    </span>
+                                </p>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Number of Guests</p>
+                                    <p class="font-medium">{{ booking.num_guests }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Price</p>
+                                    <p class="font-medium text-accent">${{ booking.total_price }}</p>
+                                </div>
+                            </div>
+                            
+                            {% if booking.special_requests %}
+                            <div>
+                                <p class="text-gray-600 text-sm">Special Requests</p>
+                                <p class="bg-light-gray/20 p-3 rounded-md text-gray-700">{{ booking.special_requests }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Customer & Venue Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-primary">Customer Information</h3>
+                        <div class="bg-light-gray/20 p-4 rounded-md mb-6">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-primary/10 rounded-full p-2 mr-3">
+                                    <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">{{ booking.user.get_full_name|default:booking.user.username }}</p>
+                                    <p class="text-sm text-gray-600">{{ booking.user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-lg font-semibold mb-4 text-primary">Venue & Time Slot</h3>
+                        <div class="bg-light-gray/20 p-4 rounded-md">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-primary/10 rounded-full p-2 mr-3">
+                                    <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">{{ booking.venue.name }}</p>
+                                    <p class="text-sm text-gray-600">{{ booking.venue.address }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 border-t border-light-gray pt-4">
+                                <div class="flex items-center">
+                                    <div class="bg-primary/10 rounded-full p-2 mr-3">
+                                        <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium">{{ booking.time_slot.date|date:"l, F j, Y" }}</p>
+                                        <p class="text-sm text-gray-600">{{ booking.time_slot.start_time|time:"g:i A" }} - {{ booking.time_slot.end_time|time:"g:i A" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="mt-8 flex justify-end space-x-4">
+                    <a href="{% url 'manager_bookings' %}" class="btn-outline-primary">
+                        Back to Bookings
+                    </a>
+                    
+                    {% if booking.status == 'pending' %}
+                    <a href="{% url 'manager_confirm_booking' booking.id %}" class="btn-success" onclick="return confirm('Are you sure you want to confirm this booking?');">
+                        Confirm Booking
+                    </a>
+                    {% endif %}
+                    
+                    {% if booking.status != 'cancelled' %}
+                    <a href="{% url 'manager_cancel_booking' booking.id %}" class="btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?');">
+                        Cancel Booking
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include 'partials/profile_picture_modal.html' %}
+
+<script>
+    // Function to open the profile picture modal
+    function openProfilePictureModal() {
+        document.getElementById('profile-picture-modal').style.display = 'flex';
+    }
+
+    // Function to close a modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Add click event listener to close modals when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileModal = document.getElementById('profile-picture-modal');
+        profileModal.addEventListener('click', function(event) {
+            if (event.target === profileModal) {
+                closeModal('profile-picture-modal');
+            }
+        });
+    });
+</script>
+</body>
+</html>
