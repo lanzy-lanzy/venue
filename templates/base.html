@@ -63,7 +63,12 @@
                     <a href="{% url 'home' %}" class="hover:text-accent transition">Home</a>
                     <a href="{% url 'venue_list' %}" class="hover:text-accent transition">Venues</a>
                     {% if user.is_authenticated %}
-                        {% if user.is_staff and user.venue_manager.is_approved %}
+                        {% if user.is_superuser %}
+                            <!-- Admin Navigation -->
+                            <a href="{% url 'admin_dashboard' %}" class="hover:text-accent transition">Admin Dashboard</a>
+                            <a href="{% url 'admin_users' %}" class="hover:text-accent transition">Users</a>
+                            <a href="{% url 'admin_venues' %}" class="hover:text-accent transition">Venues</a>
+                        {% elif user.is_staff and user.venue_manager.is_approved %}
                             <!-- Manager Navigation -->
                             <a href="{% url 'manager_dashboard' %}" class="hover:text-accent transition">Dashboard</a>
                             <a href="{% url 'manager_venues' %}" class="hover:text-accent transition">My Venues</a>
@@ -106,7 +111,12 @@
                         <a href="{% url 'home' %}" class="block py-2 hover:text-accent transition">Home</a>
                         <a href="{% url 'venue_list' %}" class="block py-2 hover:text-accent transition">Venues</a>
                         {% if user.is_authenticated %}
-                            {% if user.is_staff and user.venue_manager.is_approved %}
+                            {% if user.is_superuser %}
+                                <!-- Admin Navigation -->
+                                <a href="{% url 'admin_dashboard' %}" class="block py-2 hover:text-accent transition">Admin Dashboard</a>
+                                <a href="{% url 'admin_users' %}" class="block py-2 hover:text-accent transition">Users</a>
+                                <a href="{% url 'admin_venues' %}" class="block py-2 hover:text-accent transition">Venues</a>
+                            {% elif user.is_staff and user.venue_manager.is_approved %}
                                 <!-- Manager Navigation -->
                                 <a href="{% url 'manager_dashboard' %}" class="block py-2 hover:text-accent transition">Dashboard</a>
                                 <a href="{% url 'manager_venues' %}" class="block py-2 hover:text-accent transition">My Venues</a>
@@ -177,7 +187,12 @@
                         <li><a href="{% url 'home' %}" class="hover:text-accent transition">Home</a></li>
                         <li><a href="{% url 'venue_list' %}" class="hover:text-accent transition">Venues</a></li>
                         {% if user.is_authenticated %}
-                            {% if user.is_staff and user.venue_manager.is_approved %}
+                            {% if user.is_superuser %}
+                                <!-- Admin Links -->
+                                <li><a href="{% url 'admin_dashboard' %}" class="hover:text-accent transition">Admin Dashboard</a></li>
+                                <li><a href="{% url 'admin_users' %}" class="hover:text-accent transition">Users</a></li>
+                                <li><a href="{% url 'admin_venues' %}" class="hover:text-accent transition">Venues</a></li>
+                            {% elif user.is_staff and user.venue_manager.is_approved %}
                                 <!-- Manager Links -->
                                 <li><a href="{% url 'manager_dashboard' %}" class="hover:text-accent transition">Dashboard</a></li>
                                 <li><a href="{% url 'manager_venues' %}" class="hover:text-accent transition">My Venues</a></li>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Venue, Category, TimeSlot, Booking, VenueManager, UserProfile
+from .models import Venue, Category, TimeSlot, Booking, VenueManager, UserProfile, Payment
 
 
 @admin.register(Category)
@@ -51,3 +51,11 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_filter = ('role', 'created_at')
     search_fields = ('user__username', 'user__email', 'phone')
     readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('booking', 'amount', 'payment_method', 'status', 'reference_number', 'payment_date')
+    list_filter = ('status', 'payment_method', 'payment_date')
+    search_fields = ('booking__user__username', 'reference_number')
+    readonly_fields = ('payment_date',)

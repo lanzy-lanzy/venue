@@ -30,6 +30,7 @@ def get_available_slots(request, venue_id):
 
     context = {
         'available_slots': available_slots,
+        'venue': venue,  # Add the venue to the context
     }
     return render(request, 'partials/available_slots.html', context)
 
@@ -58,6 +59,7 @@ def venue_edit_modal(request, venue_id):
                 'form': form,
                 'venue': venue,
                 'categories': Category.objects.all(),
+                'manager': manager,
             }
             return render(request, 'partials/venue_edit_form_new.html', context)
     else:
@@ -67,6 +69,7 @@ def venue_edit_modal(request, venue_id):
         'form': form,
         'venue': venue,
         'categories': Category.objects.all(),
+        'manager': manager,
     }
     return render(request, 'partials/venue_edit_form_new.html', context)
 
@@ -96,6 +99,7 @@ def venue_add_modal(request):
             context = {
                 'form': form,
                 'categories': Category.objects.all(),
+                'manager': manager,
             }
             return render(request, 'partials/venue_add_form_new.html', context)
     else:
@@ -104,5 +108,6 @@ def venue_add_modal(request):
     context = {
         'form': form,
         'categories': Category.objects.all(),
+        'manager': manager,
     }
     return render(request, 'partials/venue_add_form_new.html', context)

@@ -89,7 +89,7 @@
                     <!-- Booking Information -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4 text-primary">Booking Information</h3>
-                        
+
                         <div class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -101,7 +101,7 @@
                                     <p class="font-medium">{{ booking.booking_date|date:"F j, Y, g:i A" }}</p>
                                 </div>
                             </div>
-                            
+
                             <div>
                                 <p class="text-gray-600 text-sm">Status</p>
                                 <p class="font-medium">
@@ -110,7 +110,7 @@
                                     </span>
                                 </p>
                             </div>
-                            
+
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <p class="text-gray-600 text-sm">Number of Guests</p>
@@ -121,7 +121,7 @@
                                     <p class="font-medium text-accent">${{ booking.total_price }}</p>
                                 </div>
                             </div>
-                            
+
                             {% if booking.special_requests %}
                             <div>
                                 <p class="text-gray-600 text-sm">Special Requests</p>
@@ -130,7 +130,7 @@
                             {% endif %}
                         </div>
                     </div>
-                    
+
                     <!-- Customer & Venue Information -->
                     <div>
                         <h3 class="text-lg font-semibold mb-4 text-primary">Customer Information</h3>
@@ -147,7 +147,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <h3 class="text-lg font-semibold mb-4 text-primary">Venue & Time Slot</h3>
                         <div class="bg-light-gray/20 p-4 rounded-md">
                             <div class="flex items-center mb-3">
@@ -161,7 +161,7 @@
                                     <p class="text-sm text-gray-600">{{ booking.venue.address }}</p>
                                 </div>
                             </div>
-                            
+
                             <div class="mt-4 border-t border-light-gray pt-4">
                                 <div class="flex items-center">
                                     <div class="bg-primary/10 rounded-full p-2 mr-3">
@@ -178,19 +178,92 @@
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- Payment Information -->
+                <div class="mt-8 border-t border-light-gray pt-6">
+                    <h3 class="text-lg font-semibold mb-4 text-primary">Payment Information</h3>
+
+                    {% if booking.payments.exists %}
+                        {% with payment=booking.payments.first %}
+                        <div class="bg-light-gray/20 p-4 rounded-md mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Payment Status</p>
+                                    <p class="font-medium">
+                                        <span class="badge {% if payment.status == 'completed' %}badge-success{% elif payment.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                                            {{ payment.get_status_display }}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Payment Method</p>
+                                    <p class="font-medium">{{ payment.get_payment_method_display }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Reference Number</p>
+                                    <p class="font-medium">{{ payment.reference_number }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Payment Date</p>
+                                    <p class="font-medium">{{ payment.payment_date|date:"F j, Y, g:i A" }}</p>
+                                </div>
+                            </div>
+
+                            {% if payment.payment_proof %}
+                            <div class="mt-4">
+                                <p class="text-gray-600 text-sm mb-2">Payment Proof</p>
+                                <a href="{{ payment.payment_proof.url }}" target="_blank" class="block w-40 h-40 relative overflow-hidden rounded-md border border-light-gray hover:opacity-90 transition">
+                                    <img src="{{ payment.payment_proof.url }}" alt="Payment Proof" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 flex items-center justify-center transition-all">
+                                        <svg class="h-8 w-8 text-white opacity-0 hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                        </svg>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endif %}
+
+                            {% if payment.notes %}
+                            <div class="mt-4">
+                                <p class="text-gray-600 text-sm">Notes</p>
+                                <p class="bg-light-gray/30 p-3 rounded-md text-gray-700">{{ payment.notes }}</p>
+                            </div>
+                            {% endif %}
+
+                            {% if payment.status == 'pending' %}
+                            <div class="mt-4 flex space-x-3">
+                                <a href="{% url 'manager_verify_payment' payment.id %}" class="btn-success" onclick="return confirm('Are you sure you want to verify this payment?');">
+                                    Verify Payment
+                                </a>
+                                <a href="{% url 'manager_reject_payment' payment.id %}" class="btn-danger" onclick="return confirm('Are you sure you want to reject this payment?');">
+                                    Reject Payment
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                    {% else %}
+                        <div class="bg-light-gray/20 p-4 rounded-md mb-6 text-center">
+                            <p class="text-gray-600">No payment information available for this booking.</p>
+                            {% if booking.status == 'confirmed' %}
+                            <p class="text-gray-600 mt-2">The customer has not submitted a payment yet.</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
                 <!-- Action Buttons -->
                 <div class="mt-8 flex justify-end space-x-4">
                     <a href="{% url 'manager_bookings' %}" class="btn-outline-primary">
                         Back to Bookings
                     </a>
-                    
+
                     {% if booking.status == 'pending' %}
                     <a href="{% url 'manager_confirm_booking' booking.id %}" class="btn-success" onclick="return confirm('Are you sure you want to confirm this booking?');">
                         Confirm Booking
                     </a>
                     {% endif %}
-                    
+
                     {% if booking.status != 'cancelled' %}
                     <a href="{% url 'manager_cancel_booking' booking.id %}" class="btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?');">
                         Cancel Booking

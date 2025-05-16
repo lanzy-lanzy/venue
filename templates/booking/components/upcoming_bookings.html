@@ -4,7 +4,7 @@
         <h2 class="text-xl font-semibold text-primary">Upcoming Bookings</h2>
         <a href="{% url 'my_bookings' %}" class="text-accent hover:text-accent/80 text-sm font-medium">View All</a>
     </div>
-    
+
     {% if upcoming_bookings %}
     <div class="overflow-x-auto">
         <table class="dashboard-table">
@@ -13,6 +13,7 @@
                     <th>Venue</th>
                     <th>Date & Time</th>
                     <th>Status</th>
+                    <th>Payment</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -45,7 +46,36 @@
                         </span>
                     </td>
                     <td>
-                        <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-primary">View Details</a>
+                        {% if booking.payments.exists %}
+                            {% with payment=booking.payments.first %}
+                                {% if payment.status == 'completed' %}
+                                    <span class="badge badge-success">Paid</span>
+                                {% elif payment.status == 'pending' %}
+                                    <span class="badge badge-warning">Processing</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Failed</span>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            {% if booking.status == 'confirmed' %}
+                                <span class="badge" style="background-color: rgba(79, 70, 229, 0.1); color: rgb(79, 70, 229);">Unpaid</span>
+                            {% else %}
+                                <span class="text-gray-400 text-sm">-</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="flex space-x-2">
+                            <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-secondary">View</a>
+
+                            {% if booking.status == 'confirmed' %}
+                                {% if not booking.payments.exists or booking.payments.first.status != 'completed' %}
+                                <a href="{% url 'submit_payment' booking.id %}" class="btn btn-sm bg-green-600 text-white hover:bg-green-500">
+                                    Pay Now
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

@@ -1,0 +1,123 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block admin_title %}Edit User - {{ user_obj.username }}{% endblock %}
+
+{% block admin_content %}
+<!-- Page Header -->
+<div class="flex justify-between items-center mb-6">
+    <div class="flex items-center">
+        <a href="{% url 'admin_user_detail' user_obj.id %}" class="text-accent hover:text-accent/80 mr-4">
+            <svg class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to User Details
+        </a>
+        <h1 class="text-3xl font-bold text-primary">Edit User</h1>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+    <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+        <h2 class="text-xl font-semibold text-primary">Edit User Information</h2>
+    </div>
+    
+    <div class="p-6">
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %} p-4 rounded-md mb-2">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Basic Information -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">Basic Information</h3>
+                    
+                    <div class="mb-4">
+                        <label for="id_username" class="block text-gray-700 font-medium mb-2">Username</label>
+                        <input type="text" id="id_username" value="{{ user_obj.username }}" class="w-full px-4 py-2 border rounded-md text-gray-800 bg-gray-100" disabled>
+                        <p class="text-sm text-gray-500 mt-1">Username cannot be changed. Use Django Admin for advanced changes.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_first_name" class="block text-gray-700 font-medium mb-2">First Name</label>
+                        <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default:user_obj.first_name }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_last_name" class="block text-gray-700 font-medium mb-2">Last Name</label>
+                        <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default:user_obj.last_name }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_email" class="block text-gray-700 font-medium mb-2">Email</label>
+                        <input type="email" name="email" id="id_email" value="{{ form.email.value|default:user_obj.email }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">User Type</label>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <input type="checkbox" name="is_staff" id="id_is_staff" {% if user_obj.is_staff %}checked{% endif %} class="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded">
+                                <label for="id_is_staff" class="ml-2 block text-gray-700">Venue Manager</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" name="is_superuser" id="id_is_superuser" {% if user_obj.is_superuser %}checked{% endif %} class="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded">
+                                <label for="id_is_superuser" class="ml-2 block text-gray-700">Administrator</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Information -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">Profile Information</h3>
+                    
+                    <div class="mb-4">
+                        <label for="id_profile_picture" class="block text-gray-700 font-medium mb-2">Profile Picture</label>
+                        {% if user_obj.profile.profile_picture %}
+                        <div class="mb-2">
+                            <img src="{{ user_obj.profile.profile_picture.url }}" alt="{{ user_obj.username }}" class="w-24 h-24 object-cover rounded-md">
+                        </div>
+                        {% endif %}
+                        <input type="file" name="profile_picture" id="id_profile_picture" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_phone" class="block text-gray-700 font-medium mb-2">Phone</label>
+                        <input type="text" name="phone" id="id_phone" value="{{ form.phone.value|default:'' }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_address" class="block text-gray-700 font-medium mb-2">Address</label>
+                        <input type="text" name="address" id="id_address" value="{{ form.address.value|default:'' }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_preferred_payment_method" class="block text-gray-700 font-medium mb-2">Preferred Payment Method</label>
+                        <input type="text" name="preferred_payment_method" id="id_preferred_payment_method" value="{{ form.preferred_payment_method.value|default:'' }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_booking_preferences" class="block text-gray-700 font-medium mb-2">Booking Preferences</label>
+                        <textarea name="booking_preferences" id="id_booking_preferences" rows="3" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">{{ form.booking_preferences.value|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'admin_user_detail' user_obj.id %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">Cancel</a>
+                <button type="submit" class="admin-btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

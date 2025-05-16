@@ -192,5 +192,6 @@ def get_available_slots(request, venue_id):
 
     context = {
         'available_slots': available_slots,
+        'venue': venue,  # Add the venue to the context
     }
     return render(request, 'partials/available_slots.html', context)

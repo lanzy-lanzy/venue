@@ -1,0 +1,140 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block admin_title %}Edit Venue - {{ venue.name }}{% endblock %}
+
+{% block admin_content %}
+<!-- Page Header -->
+<div class="flex justify-between items-center mb-6">
+    <div class="flex items-center">
+        <a href="{% url 'admin_venue_detail' venue.id %}" class="text-accent hover:text-accent/80 mr-4">
+            <svg class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Venue Details
+        </a>
+        <h1 class="text-3xl font-bold text-primary">Edit Venue</h1>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+    <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+        <h2 class="text-xl font-semibold text-primary">Edit Venue Information</h2>
+    </div>
+    
+    <div class="p-6">
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="{% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %} p-4 rounded-md mb-2">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Basic Information -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">Basic Information</h3>
+                    
+                    <div class="mb-4">
+                        <label for="id_name" class="block text-gray-700 font-medium mb-2">Venue Name</label>
+                        <input type="text" name="name" id="id_name" value="{{ form.name.value }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        {% if form.name.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_address" class="block text-gray-700 font-medium mb-2">Address</label>
+                        <input type="text" name="address" id="id_address" value="{{ form.address.value }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        {% if form.address.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.address.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_capacity" class="block text-gray-700 font-medium mb-2">Capacity</label>
+                        <input type="number" name="capacity" id="id_capacity" value="{{ form.capacity.value }}" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        {% if form.capacity.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.capacity.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_hourly_rate" class="block text-gray-700 font-medium mb-2">Hourly Rate ($)</label>
+                        <input type="number" name="hourly_rate" id="id_hourly_rate" value="{{ form.hourly_rate.value }}" step="0.01" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        {% if form.hourly_rate.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.hourly_rate.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_status" class="block text-gray-700 font-medium mb-2">Status</label>
+                        <select name="status" id="id_status" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                            {% for value, label in form.fields.status.choices %}
+                            <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if form.status.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.status.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Additional Information -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">Additional Information</h3>
+                    
+                    <div class="mb-4">
+                        <label for="id_image" class="block text-gray-700 font-medium mb-2">Venue Image</label>
+                        {% if venue.image %}
+                        <div class="mb-2">
+                            <img src="{{ venue.image.url }}" alt="{{ venue.name }}" class="w-32 h-32 object-cover rounded-md">
+                        </div>
+                        <div class="text-sm text-gray-500 mb-2">Current image: {{ venue.image.name }}</div>
+                        {% endif %}
+                        <input type="file" name="image" id="id_image" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                        <p class="text-sm text-gray-500 mt-1">Leave empty to keep the current image.</p>
+                        {% if form.image.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.image.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_categories" class="block text-gray-700 font-medium mb-2">Categories</label>
+                        <div class="max-h-48 overflow-y-auto border rounded-md p-3">
+                            {% for category in form.categories %}
+                            <div class="flex items-center mb-2">
+                                {{ category.tag }}
+                                <label for="{{ category.id_for_label }}" class="ml-2 text-gray-700">{{ category.choice_label }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if form.categories.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.categories.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_description" class="block text-gray-700 font-medium mb-2">Description</label>
+                        <textarea name="description" id="id_description" rows="5" class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">{{ form.description.value }}</textarea>
+                        {% if form.description.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.description.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'admin_venue_detail' venue.id %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">Cancel</a>
+                <button type="submit" class="admin-btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

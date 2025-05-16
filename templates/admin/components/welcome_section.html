@@ -1,0 +1,101 @@
+<!-- Welcome Section with Quick Actions -->
+<div class="bg-gradient-to-r from-primary to-primary/80 rounded-xl shadow-lg mb-8 overflow-hidden">
+    <div class="p-6 text-white">
+        <div class="flex items-start justify-between">
+            <div>
+                <h2 class="text-2xl font-bold">Welcome back, {{ user.get_full_name|default:user.username }}!</h2>
+                <p class="mt-2 text-white/80">Here's what's happening with your venue booking system today.</p>
+            </div>
+            <div class="text-sm text-white/70 bg-white/10 px-3 py-1 rounded-full">
+                Last updated: {% now "F j, Y, g:i a" %}
+            </div>
+        </div>
+        
+        <!-- Quick Stats Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+            <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                <div class="flex items-center">
+                    <div class="bg-white/20 p-2 rounded-full mr-3">
+                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-white/70">Users</p>
+                        <p class="text-lg font-semibold">{{ users_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                <div class="flex items-center">
+                    <div class="bg-white/20 p-2 rounded-full mr-3">
+                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-white/70">Venues</p>
+                        <p class="text-lg font-semibold">{{ venues_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                <div class="flex items-center">
+                    <div class="bg-white/20 p-2 rounded-full mr-3">
+                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-white/70">Bookings</p>
+                        <p class="text-lg font-semibold">{{ bookings_count }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                <div class="flex items-center">
+                    <div class="bg-white/20 p-2 rounded-full mr-3">
+                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-white/70">Pending</p>
+                        <p class="text-lg font-semibold">{{ pending_bookings_count }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white/5 border-t border-white/10 px-6 py-4">
+        <div class="flex flex-wrap gap-2">
+            <a href="{% url 'admin_users' %}" class="bg-white/20 hover:bg-white/30 text-white text-sm py-2 px-4 rounded-md transition-colors flex items-center">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                Add User
+            </a>
+            <a href="{% url 'admin_venues' %}" class="bg-white/20 hover:bg-white/30 text-white text-sm py-2 px-4 rounded-md transition-colors flex items-center">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path>
+                </svg>
+                Add Venue
+            </a>
+            <a href="/admin/booking/booking/?status__exact=pending" class="bg-white/20 hover:bg-white/30 text-white text-sm py-2 px-4 rounded-md transition-colors flex items-center">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Review Pending
+            </a>
+            <a href="/admin/" class="bg-white/20 hover:bg-white/30 text-white text-sm py-2 px-4 rounded-md transition-colors flex items-center">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                Django Admin
+            </a>
+        </div>
+    </div>
+</div>

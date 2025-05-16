@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Venue, TimeSlot, Booking, Category, VenueManager, UserProfile
+from .models import Venue, TimeSlot, Booking, Category, VenueManager, UserProfile, Payment
 
 
 class VenueForm(forms.ModelForm):
@@ -126,3 +126,36 @@ class RegistrationForm(UserCreationForm):
             user.save()
 
         return user
+
+
+class PaymentForm(forms.ModelForm):
+    """
+    Form for submitting payments for bookings.
+    """
+    class Meta:
+        model = Payment
+        fields = ['payment_method', 'reference_number', 'payment_proof', 'notes']
+        widgets = {
+            'payment_method': forms.Select(attrs={
+                'class': 'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent',
+            }),
+            'reference_number': forms.TextInput(attrs={
+                'class': 'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent',
+                'placeholder': 'Enter your GCash reference number',
+            }),
+            'payment_proof': forms.FileInput(attrs={
+                'class': 'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent',
+                'accept': 'image/*',
+            }),
+            'notes': forms.Textarea(attrs={
+                'class': 'w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent',
+                'rows': 3,
+                'placeholder': 'Any additional information about your payment',
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set GCash as the default payment method
+        if 'payment_method' in self.fields:
+            self.fields['payment_method'].initial = 'gcash'

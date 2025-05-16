@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment History - VenueBook{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <!-- Breadcrumbs -->
+    <div class="text-sm text-gray-600 mb-4">
+        <a href="{% url 'home' %}" class="hover:text-accent">Home</a> &gt;
+        <a href="{% url 'my_bookings' %}" class="hover:text-accent">My Bookings</a> &gt;
+        <span class="text-primary">Payment History</span>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden mb-8">
+        <div class="bg-primary text-white py-4 px-6">
+            <h1 class="text-2xl font-bold">Payment History</h1>
+        </div>
+
+        <div class="p-6">
+            {% if payments %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-primary/5">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Booking</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for payment in payments %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ payment.id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ payment.payment_date|date:"M d, Y" }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <a href="{% url 'booking_detail' payment.booking.id %}" class="text-accent hover:text-accent/80">
+                                    Booking #{{ payment.booking.id }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ payment.get_payment_method_display }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ payment.amount }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if payment.status == 'completed' %}bg-green-100 text-green-800
+                                    {% elif payment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-red-100 text-red-800{% endif %}">
+                                    {{ payment.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{% url 'payment_detail' payment.id %}" class="text-accent hover:text-accent/80">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <svg class="h-16 w-16 text-accent/60 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 mb-1">No Payments Yet</h3>
+                <p class="text-gray-500">You haven't made any payments yet.</p>
+                <div class="mt-4">
+                    <a href="{% url 'my_bookings' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent hover:bg-accent/80">
+                        View My Bookings
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

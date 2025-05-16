@@ -4,6 +4,7 @@ from .booking_views import book_venue, booking_detail, my_bookings, cancel_booki
 from .htmx_views import get_available_slots, venue_edit_modal, venue_add_modal
 from .user_views import edit_profile, my_profile, register, user_dashboard, update_profile_picture, logout_view
 from .auth_views import CustomLoginView
+from .payment_views import submit_payment, payment_detail, payment_history
 from .manager_views import (
     manager_dashboard,
     manager_venues,
@@ -15,7 +16,20 @@ from .manager_views import (
     manager_delete_venue,
     manager_booking_detail,
     manager_confirm_booking,
-    manager_cancel_booking
+    manager_cancel_booking,
+    manager_payments,
+    manager_payment_detail,
+    manager_verify_payment,
+    manager_reject_payment
+)
+from .admin_views import (
+    admin_dashboard,
+    admin_users,
+    admin_user_detail,
+    admin_user_edit,
+    admin_venues,
+    admin_venue_detail,
+    admin_venue_edit
 )
 
 # Make all views available at the package level
@@ -37,6 +51,11 @@ __all__ = [
     'update_profile_picture',
     'logout_view',
     'CustomLoginView',
+    # Payment views
+    'submit_payment',
+    'payment_detail',
+    'payment_history',
+    # Manager views
     'manager_dashboard',
     'manager_venues',
     'manager_add_venue',
@@ -47,5 +66,17 @@ __all__ = [
     'manager_delete_venue',
     'manager_booking_detail',
     'manager_confirm_booking',
-    'manager_cancel_booking'
+    'manager_cancel_booking',
+    'manager_payments',
+    'manager_payment_detail',
+    'manager_verify_payment',
+    'manager_reject_payment',
+    # Admin views
+    'admin_dashboard',
+    'admin_users',
+    'admin_user_detail',
+    'admin_user_edit',
+    'admin_venues',
+    'admin_venue_detail',
+    'admin_venue_edit'
 ]

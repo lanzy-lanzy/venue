@@ -1,0 +1,139 @@
+<!-- Add Time Slot Modal Component -->
+<div id="add-time-slot-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" style="display: none;">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation();">
+        <!-- Modal Header -->
+        <div class="bg-primary text-white p-4 rounded-t-lg border-b-4 border-accent">
+            <h2 class="text-xl font-bold" id="time-slot-modal-title">Add Time Slot</h2>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="p-6">
+            <form id="add-time-slot-form" class="space-y-6">
+                {% csrf_token %}
+                <input type="hidden" id="venue_id" name="venue_id">
+                
+                <!-- Date Field -->
+                <div class="mb-4">
+                    <label for="date" class="block text-gray-900 font-medium mb-2">Date <span class="text-red-600">*</span></label>
+                    <input type="date" id="date" name="date" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900">
+                    <p class="text-sm text-gray-600 mt-1">Select the date for this time slot.</p>
+                </div>
+                
+                <!-- Time Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="start_time" class="block text-gray-900 font-medium mb-2">Start Time <span class="text-red-600">*</span></label>
+                        <input type="time" id="start_time" name="start_time" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900">
+                    </div>
+                    
+                    <div>
+                        <label for="end_time" class="block text-gray-900 font-medium mb-2">End Time <span class="text-red-600">*</span></label>
+                        <input type="time" id="end_time" name="end_time" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900">
+                    </div>
+                </div>
+                
+                <!-- Availability Checkbox -->
+                <div class="flex items-center">
+                    <input type="checkbox" id="is_available" name="is_available" checked
+                           class="h-5 w-5 text-primary focus:ring-primary border-gray-300 rounded">
+                    <label for="is_available" class="ml-2 block text-gray-900 font-medium">Available for booking</label>
+                </div>
+                
+                <!-- Information Alert -->
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mt-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-800">
+                                You can add multiple time slots for the same day with different start and end times. Make sure the end time is after the start time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Buttons -->
+                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeTimeSlotModal()" class="bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition font-medium">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-primary text-white py-2 px-4 rounded-md hover:bg-primary/90 transition font-medium">
+                        Add Time Slot
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to open the time slot modal
+    function openTimeSlotModal(venueId, venueName) {
+        // Set venue ID in the form
+        document.getElementById('venue_id').value = venueId;
+        
+        // Update modal title with venue name
+        document.getElementById('time-slot-modal-title').textContent = 'Add Time Slot for ' + venueName;
+        
+        // Show the modal
+        document.getElementById('add-time-slot-modal').style.display = 'flex';
+    }
+    
+    // Function to close the time slot modal
+    function closeTimeSlotModal() {
+        document.getElementById('add-time-slot-modal').style.display = 'none';
+    }
+    
+    // Add event listener to close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('add-time-slot-modal');
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeTimeSlotModal();
+            }
+        });
+        
+        // Handle form submission
+        const form = document.getElementById('add-time-slot-form');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(form);
+            const venueId = formData.get('venue_id');
+            
+            // Submit form using fetch
+            fetch(`/admin/booking/timeslot/add-ajax/${venueId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    closeTimeSlotModal();
+                    // Show success message
+                    alert('Time slot added successfully!');
+                    // Reload page to show new time slot
+                    window.location.reload();
+                } else {
+                    // Show error message
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    });
+</script>

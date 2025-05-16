@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden
-from booking.models import Venue, TimeSlot, Booking, Category, VenueManager
+from booking.models import Venue, TimeSlot, Booking, Category, VenueManager, Payment
 from booking.forms import VenueForm, TimeSlotForm
 from booking.decorators import venue_manager_required
 
@@ -62,6 +62,7 @@ def manager_venues(request):
 
     context = {
         'venues': venues,
+        'manager': manager,
     }
     return render(request, 'manager/venues.html', context)
 
@@ -92,6 +93,7 @@ def manager_add_venue(request):
         'form': form,
         'categories': Category.objects.all(),
         'venues': venues,
+        'manager': request.user.venue_manager,
     }
     return render(request, 'manager/add_venue.html', context)
 
@@ -119,6 +121,7 @@ def manager_edit_venue(request, venue_id):
         'form': form,
         'venue': venue,
         'categories': Category.objects.all(),
+        'manager': manager,
     }
     return render(request, 'manager/edit_venue.html', context)
 
@@ -151,6 +154,7 @@ def manager_bookings(request):
         'venues': venues,
         'status': status,
         'venue_id': venue_id,
+        'manager': manager,
     }
     return render(request, 'manager/bookings.html', context)
 
@@ -181,6 +185,7 @@ def manager_time_slots(request, venue_id):
         'venue': venue,
         'time_slots': time_slots,
         'venues': venues,
+        'manager': manager,
     }
     return render(request, 'manager/time_slots.html', context)
 
@@ -213,6 +218,7 @@ def manager_add_time_slot(request, venue_id):
         'form': form,
         'venue': venue,
         'venues': venues,
+        'manager': manager,
     }
     return render(request, 'manager/add_time_slot.html', context)
 
@@ -236,6 +242,7 @@ def manager_booking_detail(request, booking_id):
     context = {
         'booking': booking,
         'venues': venues,
+        'manager': manager,
     }
     return render(request, 'manager/booking_detail.html', context)
 
@@ -332,3 +339,115 @@ def manager_delete_venue(request, venue_id):
 
     messages.success(request, f'Venue "{venue_name}" has been deleted successfully.')
     return redirect('manager_venues')
+
+
+@login_required
+@venue_manager_required
+def manager_payments(request):
+    """
+    View for managing payments for venues managed by the manager.
+    """
+    manager = request.user.venue_manager
+    venues = Venue.objects.filter(manager=manager)
+
+    # Get payments for all managed venues
+    payments = Payment.objects.filter(booking__venue__in=venues).order_by('-payment_date')
+
+    # Filter by status if provided
+    status = request.GET.get('status')
+    if status:
+        payments = payments.filter(status=status)
+
+    # Filter by venue if provided
+    venue_id = request.GET.get('venue')
+    if venue_id:
+        payments = payments.filter(booking__venue_id=venue_id)
+
+    context = {
+        'payments': payments,
+        'venues': venues,
+        'status': status,
+        'venue_id': venue_id,
+        'manager': manager,
+    }
+    return render(request, 'manager/payments.html', context)
+
+
+@login_required
+@venue_manager_required
+def manager_payment_detail(request, payment_id):
+    """
+    View for displaying payment details for managers.
+    """
+    manager = request.user.venue_manager
+    venues = Venue.objects.filter(manager=manager)
+
+    # Get the payment and verify it belongs to one of the manager's venues
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    # Check if the payment belongs to one of the manager's venues
+    if payment.booking.venue.manager != manager:
+        return HttpResponseForbidden("You don't have permission to view this payment.")
+
+    context = {
+        'payment': payment,
+        'venues': venues,
+        'manager': manager,
+    }
+    return render(request, 'manager/payment_detail.html', context)
+
+
+@login_required
+@venue_manager_required
+def manager_verify_payment(request, payment_id):
+    """
+    View for verifying a payment.
+    """
+    manager = request.user.venue_manager
+
+    # Get the payment and verify it belongs to one of the manager's venues
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    # Check if the payment belongs to one of the manager's venues
+    if payment.booking.venue.manager != manager:
+        return HttpResponseForbidden("You don't have permission to verify this payment.")
+
+    # Check if the payment is pending
+    if payment.status != 'pending':
+        messages.error(request, 'Only pending payments can be verified.')
+        return redirect('manager_payment_detail', payment_id=payment.id)
+
+    # Verify the payment
+    payment.status = 'completed'
+    payment.save()
+
+    messages.success(request, f'Payment for Booking #{payment.booking.id} has been verified successfully.')
+    return redirect('manager_payment_detail', payment_id=payment.id)
+
+
+@login_required
+@venue_manager_required
+def manager_reject_payment(request, payment_id):
+    """
+    View for rejecting a payment.
+    """
+    manager = request.user.venue_manager
+
+    # Get the payment and verify it belongs to one of the manager's venues
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    # Check if the payment belongs to one of the manager's venues
+    if payment.booking.venue.manager != manager:
+        return HttpResponseForbidden("You don't have permission to reject this payment.")
+
+    # Check if the payment is pending
+    if payment.status != 'pending':
+        messages.error(request, 'Only pending payments can be rejected.')
+        return redirect('manager_payment_detail', payment_id=payment.id)
+
+    # Reject the payment
+    payment.status = 'failed'
+    payment.save()
+
+    messages.success(request, f'Payment for Booking #{payment.booking.id} has been rejected.')
+    return redirect('manager_payment_detail', payment_id=payment.id)

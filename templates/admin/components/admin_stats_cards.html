@@ -1,0 +1,98 @@
+<!-- Enhanced Admin Stats Cards Component -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Users Card -->
+    <div class="admin-stats-card transform hover:scale-105 transition-all duration-300 border-t-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-700 text-sm font-medium uppercase tracking-wide">Total Users</p>
+                <h3 class="text-3xl font-bold text-primary mt-1">{{ users_count }}</h3>
+                <p class="text-sm text-gray-700 mt-1">Active accounts in system</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-full">
+                <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-gray-100">
+            <a href="{% url 'admin_users' %}" class="text-accent hover:text-accent/80 text-sm font-medium flex items-center">
+                View All Users
+                <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Venues Card -->
+    <div class="admin-stats-card transform hover:scale-105 transition-all duration-300 border-t-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-700 text-sm font-medium uppercase tracking-wide">Total Venues</p>
+                <h3 class="text-3xl font-bold text-primary mt-1">{{ venues_count }}</h3>
+                <p class="text-sm text-gray-700 mt-1">Available for booking</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+                <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-gray-100">
+            <a href="{% url 'admin_venues' %}" class="text-accent hover:text-accent/80 text-sm font-medium flex items-center">
+                View All Venues
+                <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bookings Card -->
+    <div class="admin-stats-card transform hover:scale-105 transition-all duration-300 border-t-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-700 text-sm font-medium uppercase tracking-wide">Total Bookings</p>
+                <h3 class="text-3xl font-bold text-primary mt-1">{{ bookings_count }}</h3>
+                <p class="text-sm text-gray-700 mt-1">All time reservations</p>
+            </div>
+            <div class="bg-purple-100 p-3 rounded-full">
+                <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-gray-100">
+            <a href="/admin/booking/booking/" class="text-accent hover:text-accent/80 text-sm font-medium flex items-center">
+                View All Bookings
+                <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Pending Bookings Card -->
+    <div class="admin-stats-card transform hover:scale-105 transition-all duration-300 border-t-4 border-yellow-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-700 text-sm font-medium uppercase tracking-wide">Pending Bookings</p>
+                <h3 class="text-3xl font-bold text-primary mt-1">{{ pending_bookings_count }}</h3>
+                <p class="text-sm text-gray-700 mt-1">Awaiting confirmation</p>
+            </div>
+            <div class="bg-yellow-100 p-3 rounded-full">
+                <svg class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-4 pt-3 border-t border-gray-100">
+            <a href="/admin/booking/booking/?status__exact=pending" class="text-accent hover:text-accent/80 text-sm font-medium flex items-center">
+                View Pending Bookings
+                <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>

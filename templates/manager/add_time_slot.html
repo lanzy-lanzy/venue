@@ -3,89 +3,288 @@
 {% block title %}Add Time Slot - {{ venue.name }} - VenueBook{% endblock %}
 
 {% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    .sidebar-link {
-        @apply flex items-center py-2 px-4 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 rounded-md transition;
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f5f5f5;
+        background-image:
+          linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
+        background-size: 20px 20px;
     }
+
+    /* Component: Sidebar */
+    .sidebar-component {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .sidebar-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid #EEEEEE;
+    }
+
+    .sidebar-content {
+        padding: 1.25rem;
+    }
+
+    .sidebar-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #EEEEEE;
+    }
+
+    .sidebar-section:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: #06113C;
+        border-radius: 0.375rem;
+        transition: all 0.2s ease;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .sidebar-link:hover {
+        background-color: rgba(255, 140, 50, 0.1);
+        color: #FF8C32;
+    }
+
     .sidebar-link.active {
-        @apply bg-indigo-100 text-indigo-700 font-medium;
+        background-color: #FF8C32;
+        color: white;
+    }
+
+    .sidebar-link svg {
+        margin-right: 0.75rem;
+    }
+
+    /* Component: Card */
+    .card-component {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        padding: 1rem 1.5rem;
+        background-color: #5046e5; /* Purple color from screenshot */
+        color: white;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Component: Form */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #06113C;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.625rem 0.75rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        color: #1f2937;
+        background-color: white;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #5046e5;
+        box-shadow: 0 0 0 3px rgba(80, 70, 229, 0.1);
+    }
+
+    .form-hint {
+        margin-top: 0.375rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    /* Component: Button */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #5046e5; /* Purple color from screenshot */
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #4338ca;
+    }
+
+    .btn-secondary {
+        background-color: #f3f4f6; /* Light gray color from screenshot */
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e5e7eb;
+    }
+
+    .btn-accent {
+        background-color: #FF8C32; /* Orange accent color */
+        color: white;
+    }
+
+    .btn-accent:hover {
+        background-color: #f97316;
+    }
+
+    /* Component: Alert */
+    .alert {
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert-info {
+        background-color: #f0f9ff; /* Light blue background */
+        border-left: 4px solid #3b82f6;
+        color: #0c4a6e; /* Darker blue text for better contrast */
+    }
+
+    .alert-icon {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .alert-icon svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+        color: #3b82f6; /* Blue icon color */
+    }
+
+    /* Component: Checkbox */
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .checkbox {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 0.25rem;
+        margin-right: 0.5rem;
+        accent-color: #5046e5;
+        cursor: pointer;
+    }
+
+    .checkbox-wrapper label {
+        cursor: pointer;
+        user-select: none;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4">
-    <h1 class="text-3xl font-bold mb-6 text-gray-800">Add Time Slot</h1>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <!-- Sidebar -->
+<div class="container mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Sidebar Component -->
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow-md p-4 sticky top-4">
-                <div class="mb-6">
-                    <h2 class="text-xl font-semibold mb-2 text-gray-800">{{ manager.user.get_full_name|default:manager.user.username }}</h2>
-                    <p class="text-gray-600">{{ manager.company_name }}</p>
+            <div class="sidebar-component">
+                <div class="sidebar-header">
+                    <h2 class="text-lg font-semibold text-primary">{{ manager.user.get_full_name|default:manager.user.username }}</h2>
+                    <p class="text-gray-600 text-sm">{{ venue.name }}</p>
                 </div>
-                
-                <nav class="space-y-1">
-                    <a href="{% url 'manager_dashboard' %}" class="sidebar-link">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
-                        Dashboard
-                    </a>
-                    <a href="{% url 'manager_venues' %}" class="sidebar-link active">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        My Venues
-                    </a>
-                    <a href="{% url 'manager_bookings' %}" class="sidebar-link">
-                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        Bookings
-                    </a>
-                </nav>
-                
-                <div class="mt-8 pt-6 border-t">
-                    <h3 class="font-semibold text-gray-800 mb-4">Venue Information</h3>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <p class="text-gray-600 text-sm">Name</p>
-                            <p class="font-medium">{{ venue.name }}</p>
-                        </div>
-                        
-                        <div>
-                            <p class="text-gray-600 text-sm">Address</p>
-                            <p class="font-medium">{{ venue.address }}</p>
-                        </div>
-                        
-                        <div>
-                            <p class="text-gray-600 text-sm">Capacity</p>
-                            <p class="font-medium">{{ venue.capacity }} people</p>
-                        </div>
-                        
-                        <div>
-                            <p class="text-gray-600 text-sm">Hourly Rate</p>
-                            <p class="font-medium">${{ venue.hourly_rate }}/hour</p>
+
+                <div class="sidebar-content">
+                    <!-- Navigation Links -->
+                    <div class="sidebar-section">
+                        <a href="{% url 'manager_dashboard' %}" class="sidebar-link">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'manager_venues' %}" class="sidebar-link active">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            My Venues
+                        </a>
+                        <a href="{% url 'manager_bookings' %}" class="sidebar-link">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Bookings
+                        </a>
+                    </div>
+
+                    <!-- Venue Information -->
+                    <div class="sidebar-section">
+                        <h3 class="text-sm font-semibold uppercase text-gray-500 mb-3">Venue Information</h3>
+
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-gray-500 text-xs">Name</p>
+                                <p class="font-medium text-primary">{{ venue.name }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-500 text-xs">Address</p>
+                                <p class="font-medium text-primary">{{ venue.address }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-500 text-xs">Capacity</p>
+                                <p class="font-medium text-primary">{{ venue.capacity }} people</p>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-500 text-xs">Hourly Rate</p>
+                                <p class="font-medium text-primary">${{ venue.hourly_rate }}/hour</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Main Content -->
-        <div class="lg:col-span-3">
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="bg-indigo-600 text-white py-4 px-6">
+        <div class="lg:col-span-3 space-y-6">
+            <!-- Add Time Slot Card -->
+            <div class="card-component">
+                <div class="card-header bg-[#5046e5]">
                     <h2 class="text-xl font-semibold">Add Time Slot for {{ venue.name }}</h2>
                 </div>
-                
-                <div class="p-6">
+
+                <div class="card-body">
                     <form action="{% url 'manager_add_time_slot' venue.id %}" method="post" class="space-y-6">
                         {% csrf_token %}
-                        
+
                         {% if form.errors %}
                         <div class="bg-red-100 text-red-700 p-4 rounded-md mb-4">
                             <p class="font-medium">Please correct the following errors:</p>
@@ -101,147 +300,134 @@
                             </ul>
                         </div>
                         {% endif %}
-                        
-                        <div>
-                            <label for="id_date" class="block text-gray-700 font-medium mb-2">Date *</label>
-                            <input type="date" id="id_date" name="date" required
-                                   class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <p class="text-sm text-gray-500 mt-1">Select the date for this time slot.</p>
+
+                        <!-- Date Field -->
+                        <div class="form-group">
+                            <label for="id_date" class="form-label">Date <span class="text-red-500">*</span></label>
+                            <input type="date" id="id_date" name="date" required class="form-input">
+                            <p class="form-hint">Select the date for this time slot.</p>
                         </div>
-                        
+
+                        <!-- Time Fields -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="id_start_time" class="block text-gray-700 font-medium mb-2">Start Time *</label>
-                                <input type="time" id="id_start_time" name="start_time" required
-                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <div class="form-group">
+                                <label for="id_start_time" class="form-label">Start Time <span class="text-red-500">*</span></label>
+                                <input type="time" id="id_start_time" name="start_time" required class="form-input">
                             </div>
-                            
-                            <div>
-                                <label for="id_end_time" class="block text-gray-700 font-medium mb-2">End Time *</label>
-                                <input type="time" id="id_end_time" name="end_time" required
-                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                            <div class="form-group">
+                                <label for="id_end_time" class="form-label">End Time <span class="text-red-500">*</span></label>
+                                <input type="time" id="id_end_time" name="end_time" required class="form-input">
                             </div>
                         </div>
-                        
-                        <div class="flex items-center">
-                            <input type="checkbox" id="id_is_available" name="is_available" checked
-                                   class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                            <label for="id_is_available" class="ml-2 block text-gray-700">Available for booking</label>
+
+                        <!-- Available Checkbox -->
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="id_is_available" name="is_available" checked class="checkbox">
+                            <label for="id_is_available" class="text-primary">Available for booking</label>
                         </div>
-                        
-                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm text-blue-700">
-                                        You can add multiple time slots for the same day with different start and end times.
-                                        Make sure the end time is after the start time.
-                                    </p>
-                                </div>
+
+                        <!-- Info Alert -->
+                        <div class="alert alert-info">
+                            <div class="alert-icon">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-sm">
+                                    You can add multiple time slots for the same day with different start and end times. Make sure the end time is after the start time.
+                                </p>
                             </div>
                         </div>
-                        
+
                         <!-- Submit Buttons -->
                         <div class="flex justify-end space-x-4 pt-4 border-t">
-                            <a href="{% url 'manager_time_slots' venue.id %}" class="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 transition">
+                            <a href="{% url 'manager_time_slots' venue.id %}" class="btn btn-secondary">
                                 Cancel
                             </a>
-                            <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
+                            <button type="submit" class="btn btn-primary">
                                 Add Time Slot
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-            
-            <!-- Bulk Time Slot Creation -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden mt-8">
-                <div class="bg-indigo-600 text-white py-4 px-6">
+
+            <!-- Bulk Time Slot Creation Card -->
+            <div class="card-component">
+                <div class="card-header bg-[#5046e5]">
                     <h2 class="text-xl font-semibold">Bulk Time Slot Creation</h2>
                 </div>
-                
-                <div class="p-6">
+
+                <div class="card-body">
                     <p class="text-gray-600 mb-4">Create multiple time slots at once by selecting a date range and time pattern.</p>
-                    
+
                     <form action="#" method="post" class="space-y-6">
                         {% csrf_token %}
-                        
+
+                        <!-- Date Range -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="start_date" class="block text-gray-700 font-medium mb-2">Start Date *</label>
-                                <input type="date" id="start_date" name="start_date" required
-                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <div class="form-group">
+                                <label for="start_date" class="form-label">Start Date <span class="text-red-500">*</span></label>
+                                <input type="date" id="start_date" name="start_date" required class="form-input">
                             </div>
-                            
-                            <div>
-                                <label for="end_date" class="block text-gray-700 font-medium mb-2">End Date *</label>
-                                <input type="date" id="end_date" name="end_date" required
-                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                            <div class="form-group">
+                                <label for="end_date" class="form-label">End Date <span class="text-red-500">*</span></label>
+                                <input type="date" id="end_date" name="end_date" required class="form-input">
                             </div>
                         </div>
-                        
+
+                        <!-- Time Range -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="bulk_start_time" class="block text-gray-700 font-medium mb-2">Start Time *</label>
-                                <input type="time" id="bulk_start_time" name="bulk_start_time" required
-                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <div class="form-group">
+                                <label for="bulk_start_time" class="form-label">Start Time <span class="text-red-500">*</span></label>
+                                <input type="time" id="bulk_start_time" name="bulk_start_time" required class="form-input">
                             </div>
-                            
-                            <div>
-                                <label for="bulk_end_time" class="block text-gray-700 font-medium mb-2">End Time *</label>
-                                <input type="time" id="bulk_end_time" name="bulk_end_time" required
-                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                            <div class="form-group">
+                                <label for="bulk_end_time" class="form-label">End Time <span class="text-red-500">*</span></label>
+                                <input type="time" id="bulk_end_time" name="bulk_end_time" required class="form-input">
                             </div>
                         </div>
-                        
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Days of Week</label>
-                            <div class="grid grid-cols-4 gap-2">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="monday" name="days[]" value="0"
-                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                    <label for="monday" class="ml-2 block text-gray-700">Monday</label>
+
+                        <!-- Days of Week -->
+                        <div class="form-group">
+                            <label class="form-label">Days of Week</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="monday" name="days[]" value="0" class="checkbox">
+                                    <label for="monday" class="text-primary">Monday</label>
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="tuesday" name="days[]" value="1"
-                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                    <label for="tuesday" class="ml-2 block text-gray-700">Tuesday</label>
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="tuesday" name="days[]" value="1" class="checkbox">
+                                    <label for="tuesday" class="text-primary">Tuesday</label>
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="wednesday" name="days[]" value="2"
-                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                    <label for="wednesday" class="ml-2 block text-gray-700">Wednesday</label>
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="wednesday" name="days[]" value="2" class="checkbox">
+                                    <label for="wednesday" class="text-primary">Wednesday</label>
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="thursday" name="days[]" value="3"
-                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                    <label for="thursday" class="ml-2 block text-gray-700">Thursday</label>
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="thursday" name="days[]" value="3" class="checkbox">
+                                    <label for="thursday" class="text-primary">Thursday</label>
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="friday" name="days[]" value="4"
-                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                    <label for="friday" class="ml-2 block text-gray-700">Friday</label>
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="friday" name="days[]" value="4" class="checkbox">
+                                    <label for="friday" class="text-primary">Friday</label>
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="saturday" name="days[]" value="5"
-                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                    <label for="saturday" class="ml-2 block text-gray-700">Saturday</label>
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="saturday" name="days[]" value="5" class="checkbox">
+                                    <label for="saturday" class="text-primary">Saturday</label>
                                 </div>
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="sunday" name="days[]" value="6"
-                                           class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                    <label for="sunday" class="ml-2 block text-gray-700">Sunday</label>
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="sunday" name="days[]" value="6" class="checkbox">
+                                    <label for="sunday" class="text-primary">Sunday</label>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Submit Button -->
                         <div class="flex justify-end pt-4 border-t">
-                            <button type="submit" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
+                            <button type="submit" class="btn btn-primary">
                                 Create Bulk Time Slots
                             </button>
                         </div>

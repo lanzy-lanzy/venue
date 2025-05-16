@@ -1,0 +1,275 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block admin_title %}Venue Details - {{ venue.name }}{% endblock %}
+
+{% block admin_content %}
+<!-- Page Header -->
+<div class="flex justify-between items-center mb-6">
+    <div class="flex items-center">
+        <a href="{% url 'admin_venues' %}" class="text-accent hover:text-accent/80 mr-4">
+            <svg class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Venues
+        </a>
+        <h1 class="text-3xl font-bold text-primary">Venue Details</h1>
+    </div>
+    <div class="flex space-x-3">
+        <a href="{% url 'admin_venue_edit' venue.id %}" class="admin-btn-primary flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+            </svg>
+            Edit Venue
+        </a>
+        <a href="/admin/booking/venue/{{ venue.id }}/change/" class="admin-btn-secondary flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Django Admin
+        </a>
+    </div>
+</div>
+
+<!-- Venue Information -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Venue Details Card -->
+    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+        <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+            <h2 class="text-xl font-semibold text-primary">Venue Information</h2>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {% if venue.image %}
+                    <img src="{{ venue.image.url }}" alt="{{ venue.name }}" class="w-full h-64 object-cover rounded-lg mb-4">
+                    {% else %}
+                    <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    {% endif %}
+
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Name</h3>
+                            <p class="mt-1 text-lg font-medium text-gray-900">{{ venue.name }}</p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Address</h3>
+                            <p class="mt-1 text-lg font-medium text-gray-900">{{ venue.address }}</p>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500">Status</h3>
+                            <p class="mt-1">
+                                {% if venue.status == 'active' %}
+                                    <span class="admin-badge admin-badge-success">Active</span>
+                                {% elif venue.status == 'maintenance' %}
+                                    <span class="admin-badge admin-badge-warning">Maintenance</span>
+                                {% elif venue.status == 'inactive' %}
+                                    <span class="admin-badge admin-badge-danger">Inactive</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Manager</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">
+                            {% if venue.manager %}
+                                <a href="{% url 'admin_user_detail' venue.manager.user.id %}" class="text-accent hover:text-accent/80">
+                                    {{ venue.manager.user.username }}
+                                    {% if venue.manager.company_name %}
+                                        ({{ venue.manager.company_name }})
+                                    {% endif %}
+                                </a>
+                            {% else %}
+                                Not assigned
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Capacity</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">{{ venue.capacity }} people</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Hourly Rate</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">${{ venue.hourly_rate }}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Categories</h3>
+                        <div class="mt-1 flex flex-wrap gap-2">
+                            {% for category in venue.categories.all %}
+                                <span class="admin-badge bg-blue-100 text-blue-800">{{ category.name }}</span>
+                            {% empty %}
+                                <span class="text-gray-500">No categories</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Created</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">{{ venue.created_at|date:"F j, Y" }}</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Last Updated</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">{{ venue.updated_at|date:"F j, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="text-sm font-medium text-gray-500">Description</h3>
+                <p class="mt-1 text-gray-900">{{ venue.description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+        <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+            <h2 class="text-xl font-semibold text-primary">Venue Statistics</h2>
+        </div>
+        <div class="p-6">
+            <div class="space-y-6">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500">Total Bookings</h3>
+                    <p class="mt-1 text-3xl font-bold text-primary">{{ bookings.count }}</p>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500">Available Time Slots</h3>
+                    <p class="mt-1 text-3xl font-bold text-primary">{{ time_slots.filter.is_available=True.count }}</p>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500">Pending Bookings</h3>
+                    <p class="mt-1 text-3xl font-bold text-accent">{{ bookings.filter.status='pending'.count }}</p>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-medium text-gray-500">Confirmed Bookings</h3>
+                    <p class="mt-1 text-3xl font-bold text-green-600">{{ bookings.filter.status='confirmed'.count }}</p>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button onclick="openTimeSlotModal('{{ venue.id }}', '{{ venue.name }}')" class="admin-btn-primary w-full flex items-center justify-center">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Time Slot
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Time Slots -->
+<div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden mb-8">
+    <div class="p-6 border-b border-light-gray/30 bg-primary/5 flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-primary">Time Slots</h2>
+        <a href="/admin/booking/timeslot/?venue__id__exact={{ venue.id }}" class="text-accent hover:text-accent/80 text-sm font-medium">View All in Django Admin</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="admin-dashboard-table">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Start Time</th>
+                    <th scope="col">End Time</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for slot in time_slots|slice:":10" %}
+                <tr>
+                    <td class="font-medium text-gray-900">{{ slot.date|date:"M d, Y" }}</td>
+                    <td>{{ slot.start_time|time:"H:i" }}</td>
+                    <td>{{ slot.end_time|time:"H:i" }}</td>
+                    <td>
+                        {% if slot.is_available %}
+                            <span class="admin-badge admin-badge-success">Available</span>
+                        {% else %}
+                            <span class="admin-badge admin-badge-danger">Booked</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/admin/booking/timeslot/{{ slot.id }}/change/" class="text-primary hover:text-primary/80">Edit</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-gray-500">No time slots found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if time_slots.count > 10 %}
+    <div class="p-4 bg-gray-50 border-t border-gray-200 text-center">
+        <a href="/admin/booking/timeslot/?venue__id__exact={{ venue.id }}" class="text-accent hover:text-accent/80">View all {{ time_slots.count }} time slots</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Bookings -->
+<div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+    <div class="p-6 border-b border-light-gray/30 bg-primary/5 flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-primary">Recent Bookings</h2>
+        <a href="/admin/booking/booking/?venue__id__exact={{ venue.id }}" class="text-accent hover:text-accent/80 text-sm font-medium">View All in Django Admin</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="admin-dashboard-table">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Date & Time</th>
+                    <th scope="col">Guests</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Booked On</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for booking in bookings|slice:":10" %}
+                <tr>
+                    <td class="font-medium text-gray-900">#{{ booking.id }}</td>
+                    <td>
+                        <a href="{% url 'admin_user_detail' booking.user.id %}" class="text-accent hover:text-accent/80">
+                            {{ booking.user.username }}
+                        </a>
+                    </td>
+                    <td>{{ booking.time_slot.date|date:"M d, Y" }} ({{ booking.time_slot.start_time|time:"H:i" }} - {{ booking.time_slot.end_time|time:"H:i" }})</td>
+                    <td>{{ booking.num_guests }}</td>
+                    <td>
+                        {% if booking.status == 'confirmed' %}
+                            <span class="admin-badge admin-badge-success">Confirmed</span>
+                        {% elif booking.status == 'pending' %}
+                            <span class="admin-badge admin-badge-warning">Pending</span>
+                        {% elif booking.status == 'cancelled' %}
+                            <span class="admin-badge admin-badge-danger">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td>${{ booking.total_price }}</td>
+                    <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-gray-500">No bookings found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if bookings.count > 10 %}
+    <div class="p-4 bg-gray-50 border-t border-gray-200 text-center">
+        <a href="/admin/booking/booking/?venue__id__exact={{ venue.id }}" class="text-accent hover:text-accent/80">View all {{ bookings.count }} bookings</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

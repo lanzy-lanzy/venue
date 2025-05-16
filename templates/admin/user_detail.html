@@ -1,0 +1,264 @@
+{% extends 'admin/base_admin_fullpage.html' %}
+
+{% block admin_title %}User Details - {{ user_obj.username }}{% endblock %}
+
+{% block admin_content %}
+<!-- Page Header -->
+<div class="flex justify-between items-center mb-6">
+    <div class="flex items-center">
+        <a href="{% url 'admin_users' %}" class="text-accent hover:text-accent/80 mr-4">
+            <svg class="h-5 w-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Users
+        </a>
+        <h1 class="text-3xl font-bold text-primary">User Details</h1>
+    </div>
+    <div class="flex space-x-3">
+        <a href="{% url 'admin_user_edit' user_obj.id %}" class="admin-btn-primary flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+            </svg>
+            Edit User
+        </a>
+        <a href="/admin/auth/user/{{ user_obj.id }}/change/" class="admin-btn-secondary flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Django Admin
+        </a>
+    </div>
+</div>
+
+<!-- User Information -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- User Profile Card -->
+    <div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+        <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+            <h2 class="text-xl font-semibold text-primary">Profile Information</h2>
+        </div>
+        <div class="p-6">
+            <div class="flex items-center justify-center mb-6">
+                {% if user_obj.profile.profile_picture %}
+                <img src="{{ user_obj.profile.profile_picture.url }}" alt="{{ user_obj.username }}" class="w-32 h-32 rounded-full object-cover border-4 border-accent/20">
+                {% else %}
+                <div class="w-32 h-32 bg-accent rounded-full flex items-center justify-center text-white font-bold text-4xl">
+                    {{ user_obj.get_full_name|default:user_obj.username|slice:":1"|upper }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Username</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.username }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Full Name</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.get_full_name|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Email</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.email|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Role</h3>
+                    <p class="mt-1">
+                        {% if user_obj.is_superuser %}
+                            <span class="admin-badge admin-badge-success">Admin</span>
+                        {% elif user_obj.is_staff %}
+                            <span class="admin-badge admin-badge-warning">Manager</span>
+                        {% else %}
+                            {% if user_obj.profile %}
+                                <span class="admin-badge bg-blue-100 text-blue-800">{{ user_obj.profile.get_role_display }}</span>
+                            {% else %}
+                                <span class="admin-badge bg-blue-100 text-blue-800">Regular</span>
+                            {% endif %}
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Status</h3>
+                    <p class="mt-1">
+                        {% if user_obj.is_active %}
+                            <span class="admin-badge admin-badge-success">Active</span>
+                        {% else %}
+                            <span class="admin-badge admin-badge-danger">Inactive</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Joined</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.date_joined|date:"F j, Y" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Last Login</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.last_login|date:"F j, Y, g:i a"|default:"Never" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+        <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+            <h2 class="text-xl font-semibold text-primary">Additional Information</h2>
+        </div>
+        <div class="p-6">
+            {% if user_obj.profile %}
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Phone</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.profile.phone|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Address</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.profile.address|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Preferred Payment Method</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.profile.preferred_payment_method|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Booking Preferences</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.profile.booking_preferences|default:"Not provided" }}</p>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-gray-500">No profile information available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Manager Information (if applicable) -->
+    <div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+        <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+            <h2 class="text-xl font-semibold text-primary">Manager Information</h2>
+        </div>
+        <div class="p-6">
+            {% if is_venue_manager %}
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Company Name</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.venue_manager.company_name|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Phone</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ user_obj.venue_manager.phone|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Approval Status</h3>
+                    <p class="mt-1">
+                        {% if user_obj.venue_manager.is_approved %}
+                            <span class="admin-badge admin-badge-success">Approved</span>
+                        {% else %}
+                            <span class="admin-badge admin-badge-warning">Pending Approval</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Managed Venues</h3>
+                    <p class="mt-1 text-lg font-medium text-gray-900">{{ venues.count }}</p>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-gray-500">This user is not a venue manager.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- User's Bookings -->
+<div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden mb-8">
+    <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+        <h2 class="text-xl font-semibold text-primary">Bookings</h2>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="admin-dashboard-table">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Venue</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Guests</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Booked On</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for booking in bookings %}
+                <tr>
+                    <td class="font-medium text-gray-900">#{{ booking.id }}</td>
+                    <td>{{ booking.venue.name }}</td>
+                    <td>{{ booking.time_slot.date|date:"M d, Y" }} ({{ booking.time_slot.start_time|time:"H:i" }} - {{ booking.time_slot.end_time|time:"H:i" }})</td>
+                    <td>
+                        {% if booking.status == 'confirmed' %}
+                            <span class="admin-badge admin-badge-success">Confirmed</span>
+                        {% elif booking.status == 'pending' %}
+                            <span class="admin-badge admin-badge-warning">Pending</span>
+                        {% elif booking.status == 'cancelled' %}
+                            <span class="admin-badge admin-badge-danger">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ booking.num_guests }}</td>
+                    <td>${{ booking.total_price }}</td>
+                    <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-gray-500">No bookings found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- User's Venues (if manager) -->
+{% if is_venue_manager and venues %}
+<div class="bg-white rounded-lg shadow-sm border border-light-gray/50 overflow-hidden">
+    <div class="p-6 border-b border-light-gray/30 bg-primary/5">
+        <h2 class="text-xl font-semibold text-primary">Managed Venues</h2>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="admin-dashboard-table">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Capacity</th>
+                    <th scope="col">Hourly Rate</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for venue in venues %}
+                <tr>
+                    <td class="font-medium text-gray-900">{{ venue.name }}</td>
+                    <td>{{ venue.address }}</td>
+                    <td>{{ venue.capacity }}</td>
+                    <td>${{ venue.hourly_rate }}</td>
+                    <td>
+                        {% if venue.status == 'active' %}
+                            <span class="admin-badge admin-badge-success">Active</span>
+                        {% elif venue.status == 'maintenance' %}
+                            <span class="admin-badge admin-badge-warning">Maintenance</span>
+                        {% elif venue.status == 'inactive' %}
+                            <span class="admin-badge admin-badge-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin_venue_detail' venue.id %}" class="text-accent hover:text-accent/80 mr-3">View</a>
+                        <a href="{% url 'admin_venue_edit' venue.id %}" class="text-primary hover:text-primary/80">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

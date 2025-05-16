@@ -4,7 +4,7 @@
         <h2 class="text-xl font-semibold text-primary">Recent Bookings</h2>
         <a href="{% url 'my_bookings' %}" class="text-accent hover:text-accent/80 text-sm font-medium">View All</a>
     </div>
-    
+
     {% if recent_bookings %}
     <div class="overflow-x-auto">
         <table class="dashboard-table">
@@ -13,6 +13,7 @@
                     <th>Venue</th>
                     <th>Date & Time</th>
                     <th>Status</th>
+                    <th>Payment</th>
                     <th>Price</th>
                 </tr>
             </thead>
@@ -43,6 +44,25 @@
                         <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
                             {{ booking.status|title }}
                         </span>
+                    </td>
+                    <td>
+                        {% if booking.payments.exists %}
+                            {% with payment=booking.payments.first %}
+                                {% if payment.status == 'completed' %}
+                                    <span class="badge badge-success">Paid</span>
+                                {% elif payment.status == 'pending' %}
+                                    <span class="badge badge-warning">Processing</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Failed</span>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            {% if booking.status == 'confirmed' %}
+                                <span class="badge" style="background-color: rgba(79, 70, 229, 0.1); color: rgb(79, 70, 229);">Unpaid</span>
+                            {% else %}
+                                <span class="text-gray-400 text-sm">-</span>
+                            {% endif %}
+                        {% endif %}
                     </td>
                     <td class="font-medium text-accent">${{ booking.total_price }}</td>
                 </tr>

@@ -1,0 +1,89 @@
+<!-- Recent Bookings Component -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+    <div class="p-4 border-b border-gray-200 bg-primary/5">
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-primary flex items-center">
+                <svg class="h-4 w-4 mr-2 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Recent Bookings
+            </h2>
+            <a href="/admin/booking/booking/" class="text-accent hover:text-accent/80 text-xs font-medium flex items-center">
+                View All
+                <svg class="h-3 w-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-primary/5 border-b border-primary/10">
+                <tr>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-primary uppercase tracking-wider">ID</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-primary uppercase tracking-wider">User</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-primary uppercase tracking-wider">Venue</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-primary uppercase tracking-wider">Date</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-primary uppercase tracking-wider">Status</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-primary uppercase tracking-wider">Price</th>
+                    <th class="py-3 px-4 text-left text-xs font-semibold text-primary uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for booking in recent_bookings %}
+                <tr class="hover:bg-primary/5 transition-colors duration-150">
+                    <td class="py-3 px-4 whitespace-nowrap font-bold text-primary">#{{ booking.id }}</td>
+                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{{ booking.user.username }}</td>
+                    <td class="py-3 px-4 whitespace-nowrap text-sm text-gray-800">{{ booking.venue.name }}</td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <div class="flex flex-col">
+                            <span class="font-medium text-gray-900">{{ booking.time_slot.date|date:"M d, Y" }}</span>
+                            <span class="text-xs text-gray-500">
+                                {{ booking.time_slot.start_time|time:"H:i" }} - {{ booking.time_slot.end_time|time:"H:i" }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        {% if booking.status == 'confirmed' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Confirmed</span>
+                        {% elif booking.status == 'pending' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                        {% elif booking.status == 'cancelled' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Cancelled</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-4 whitespace-nowrap font-medium text-gray-900">${{ booking.total_price }}</td>
+                    <td class="py-3 px-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <a href="/admin/booking/booking/{{ booking.id }}/change/" class="text-accent hover:text-accent/80 bg-accent/10 hover:bg-accent/20 px-2 py-1 rounded-md transition-colors">
+                                <svg class="h-3.5 w-3.5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                View
+                            </a>
+                            {% if booking.status == 'pending' %}
+                            <a href="#" class="text-green-700 hover:text-green-800 bg-green-100 hover:bg-green-200 px-2 py-1 rounded-md transition-colors">
+                                <svg class="h-3.5 w-3.5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Confirm
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-8 text-gray-500">
+                        <svg class="h-12 w-12 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p class="text-lg font-medium">No bookings found</p>
+                        <p class="text-sm text-gray-400">No recent bookings to display</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

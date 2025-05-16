@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Details - VenueBook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#06113C',
+                        accent: '#FF8C32',
+                        'light-gray': '#DDDDDD',
+                        'off-white': '#EEEEEE',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            background-image:
+                linear-gradient(rgba(221, 221, 221, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(221, 221, 221, 0.5) 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+    </style>
+
+    {% include 'manager/components/sidebar_styles.html' %}
+    {% include 'manager/components/dashboard_styles.html' %}
+</head>
+<body>
+
+<div class="dashboard-container">
+    {% with active_page='payments' %}
+        {% include 'manager/components/sidebar.html' %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main class="p-8">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center">
+                <a href="{% url 'manager_payments' %}" class="text-accent hover:text-accent/80 mr-3">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </a>
+                <h1 class="text-3xl font-bold text-primary">Payment Details</h1>
+            </div>
+            <div class="text-sm text-gray-600 flex items-center">
+                <svg class="h-4 w-4 mr-1 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Last updated: {% now "F j, Y, g:i a" %}
+            </div>
+        </div>
+
+        <!-- Payment Details Card -->
+        <div class="dashboard-card overflow-hidden shadow-lg mb-6">
+            <div class="dashboard-card-header bg-gradient-to-r from-primary/90 to-primary">
+                <h2 class="text-xl font-semibold text-white flex items-center">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Payment for Booking #{{ payment.booking.id }}
+                </h2>
+                <span class="badge {% if payment.status == 'completed' %}badge-success{% elif payment.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                    {{ payment.get_status_display }}
+                </span>
+            </div>
+
+            <div class="p-6 bg-gradient-to-b from-white to-off-white/50">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Payment Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-primary">Payment Information</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Payment ID</p>
+                                    <p class="font-medium">#{{ payment.id }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Payment Date</p>
+                                    <p class="font-medium">{{ payment.payment_date|date:"F j, Y, g:i A" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Status</p>
+                                    <p class="font-medium">
+                                        <span class="badge {% if payment.status == 'completed' %}badge-success{% elif payment.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                                            {{ payment.get_status_display }}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Payment Method</p>
+                                    <p class="font-medium">{{ payment.get_payment_method_display }}</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-gray-600 text-sm">Reference Number</p>
+                                <p class="font-medium">{{ payment.reference_number }}</p>
+                            </div>
+                            
+                            <div>
+                                <p class="text-gray-600 text-sm">Amount</p>
+                                <p class="font-medium text-accent text-lg">${{ payment.amount }}</p>
+                            </div>
+                            
+                            {% if payment.notes %}
+                            <div>
+                                <p class="text-gray-600 text-sm">Notes</p>
+                                <p class="bg-light-gray/20 p-3 rounded-md text-gray-700">{{ payment.notes }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if payment.payment_proof %}
+                        <div class="mt-6">
+                            <p class="text-gray-600 text-sm mb-2">Payment Proof</p>
+                            <a href="{{ payment.payment_proof.url }}" target="_blank" class="block w-full max-w-xs relative overflow-hidden rounded-md border border-light-gray hover:opacity-90 transition">
+                                <img src="{{ payment.payment_proof.url }}" alt="Payment Proof" class="w-full h-auto">
+                                <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 flex items-center justify-center transition-all">
+                                    <svg class="h-10 w-10 text-white opacity-0 hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Booking Information -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-primary">Booking Information</h3>
+                        <div class="bg-light-gray/20 p-4 rounded-md mb-6">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-primary/10 rounded-full p-2 mr-3">
+                                    <svg class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Booking #{{ payment.booking.id }}</p>
+                                    <p class="text-sm text-gray-600">{{ payment.booking.booking_date|date:"F j, Y" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 space-y-3">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Status</p>
+                                    <p class="font-medium">
+                                        <span class="badge {% if payment.booking.status == 'confirmed' %}badge-success{% elif payment.booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                                            {{ payment.booking.status|title }}
+                                        </span>
+                                    </p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-gray-600 text-sm">Venue</p>
+                                    <p class="font-medium">{{ payment.booking.venue.name }}</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-gray-600 text-sm">Date & Time</p>
+                                    <p class="font-medium">{{ payment.booking.time_slot.date|date:"F j, Y" }}, {{ payment.booking.time_slot.start_time|time:"g:i A" }} - {{ payment.booking.time_slot.end_time|time:"g:i A" }}</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-gray-600 text-sm">Customer</p>
+                                    <p class="font-medium">{{ payment.booking.user.get_full_name|default:payment.booking.user.username }}</p>
+                                    <p class="text-xs text-gray-500">{{ payment.booking.user.email }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 border-t border-light-gray pt-4">
+                                <a href="{% url 'manager_booking_detail' payment.booking.id %}" class="text-accent hover:text-accent/80 text-sm font-medium flex items-center">
+                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    View Booking Details
+                                </a>
+                            </div>
+                        </div>
+                        
+                        {% if payment.status == 'pending' %}
+                        <div class="bg-light-gray/20 p-4 rounded-md">
+                            <h4 class="font-semibold text-primary mb-3">Payment Verification</h4>
+                            <p class="text-gray-700 mb-4">Please verify the payment details and proof before accepting or rejecting this payment.</p>
+                            
+                            <div class="flex space-x-3">
+                                <a href="{% url 'manager_verify_payment' payment.id %}" class="btn-success" onclick="return confirm('Are you sure you want to verify this payment?');">
+                                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Verify Payment
+                                </a>
+                                <a href="{% url 'manager_reject_payment' payment.id %}" class="btn-danger" onclick="return confirm('Are you sure you want to reject this payment?');">
+                                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Reject Payment
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="mt-8 flex justify-end space-x-4">
+                    <a href="{% url 'manager_payments' %}" class="btn-outline-primary">
+                        Back to Payments
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+{% include 'partials/profile_picture_modal.html' %}
+
+<script>
+    // Function to open the profile picture modal
+    function openProfilePictureModal() {
+        document.getElementById('profile-picture-modal').style.display = 'flex';
+    }
+
+    // Function to close a modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Add click event listener to close modals when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileModal = document.getElementById('profile-picture-modal');
+        profileModal.addEventListener('click', function(event) {
+            if (event.target === profileModal) {
+                closeModal('profile-picture-modal');
+            }
+        });
+    });
+</script>
+</body>
+</html>

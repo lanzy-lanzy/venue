@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Payment - VenueBook{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Breadcrumbs -->
+    <div class="text-sm text-gray-600 mb-4">
+        <a href="{% url 'home' %}" class="hover:text-accent">Home</a> &gt;
+        <a href="{% url 'my_bookings' %}" class="hover:text-accent">My Bookings</a> &gt;
+        <a href="{% url 'booking_detail' booking.id %}" class="hover:text-accent">Booking #{{ booking.id }}</a> &gt;
+        <span class="text-primary font-medium">Submit Payment</span>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg border border-light-gray/50 overflow-hidden mb-8">
+        <div class="bg-primary text-white py-5 px-6">
+            <h1 class="text-2xl font-bold">Submit Payment</h1>
+        </div>
+
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Booking Summary -->
+                <div>
+                    <h2 class="text-xl font-semibold mb-4 text-primary border-b border-light-gray/50 pb-2">Booking Summary</h2>
+
+                    <div class="bg-gray-50 rounded-lg p-5 mb-6 border border-gray-200 shadow-sm">
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-gray-700 text-sm font-medium">Booking ID</p>
+                                <p class="font-semibold text-gray-900">#{{ booking.id }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-700 text-sm font-medium">Venue</p>
+                                <p class="font-semibold text-gray-900">{{ booking.venue.name }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-700 text-sm font-medium">Date & Time</p>
+                                <p class="font-semibold text-gray-900">{{ booking.time_slot.date|date:"F j, Y" }}, {{ booking.time_slot.start_time|time:"g:i A" }} - {{ booking.time_slot.end_time|time:"g:i A" }}</p>
+                            </div>
+
+                            <div>
+                                <p class="text-gray-700 text-sm font-medium">Total Amount</p>
+                                <p class="font-bold text-accent text-xl">${{ booking.total_price }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GCash Instructions -->
+                    <div class="bg-blue-50 rounded-lg border border-blue-200 p-5 mb-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-blue-100 rounded-full p-2 mt-1">
+                                <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-md font-semibold text-blue-800 mb-2">GCash Payment Instructions</h3>
+                                <div class="text-sm text-gray-800">
+                                    <ol class="list-decimal pl-5 space-y-2">
+                                        <li>Open your GCash app</li>
+                                        <li>Go to <span class="font-medium text-blue-700">Send Money</span></li>
+                                        <li>Enter the GCash number: <span class="font-bold text-blue-800">09123456789</span></li>
+                                        <li>Enter the exact amount: <span class="font-bold text-blue-800">${{ booking.total_price }}</span></li>
+                                        <li>Add a note: <span class="font-bold text-blue-800">Booking #{{ booking.id }}</span></li>
+                                        <li>Complete the transaction and take a screenshot of the confirmation</li>
+                                        <li>Enter the reference number and upload the screenshot below</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <div>
+                    <h2 class="text-xl font-semibold mb-4 text-primary border-b border-light-gray/50 pb-2">Payment Details</h2>
+
+                    <form method="post" enctype="multipart/form-data" class="space-y-5">
+                        {% csrf_token %}
+
+                        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                            <label for="{{ form.payment_method.id_for_label }}" class="block text-gray-800 font-semibold mb-2">Payment Method</label>
+                            <div class="relative">
+                                {{ form.payment_method }}
+                            </div>
+                            {% if form.payment_method.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.payment_method.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                            <label for="{{ form.reference_number.id_for_label }}" class="block text-gray-800 font-semibold mb-2">Reference Number</label>
+                            <div class="relative">
+                                {{ form.reference_number }}
+                            </div>
+                            {% if form.reference_number.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.reference_number.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-gray-600 text-sm mt-2 italic">Enter the reference number from your GCash transaction</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                            <label for="{{ form.payment_proof.id_for_label }}" class="block text-gray-800 font-semibold mb-2">Payment Proof</label>
+                            <div class="relative">
+                                {{ form.payment_proof }}
+                            </div>
+                            {% if form.payment_proof.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.payment_proof.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-gray-600 text-sm mt-2 italic">Upload a screenshot of your payment confirmation</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                            <label for="{{ form.notes.id_for_label }}" class="block text-gray-800 font-semibold mb-2">Additional Notes</label>
+                            <div class="relative">
+                                {{ form.notes }}
+                            </div>
+                            {% if form.notes.errors %}
+                            <p class="text-red-500 text-sm mt-1">{{ form.notes.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <a href="{% url 'booking_detail' booking.id %}" class="bg-gray-200 text-gray-800 py-2 px-6 rounded-lg hover:bg-gray-300 transition font-medium mr-3">
+                                Cancel
+                            </a>
+                            <button type="submit" class="bg-accent text-white py-2 px-6 rounded-lg hover:bg-accent/90 transition font-medium shadow-md">
+                                Submit Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styling for form elements */
+    select, input[type="text"], input[type="file"], textarea {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: #f9fafb;
+        color: #111827;
+        font-size: 0.875rem;
+    }
+
+    select:focus, input[type="text"]:focus, input[type="file"]:focus, textarea:focus {
+        outline: none;
+        border-color: #FF8C32;
+        box-shadow: 0 0 0 3px rgba(255, 140, 50, 0.2);
+    }
+
+    textarea {
+        min-height: 5rem;
+    }
+
+    /* Style for file input */
+    input[type="file"] {
+        padding: 0.375rem;
+    }
+
+    input[type="file"]::file-selector-button {
+        padding: 0.25rem 0.75rem;
+        margin-right: 0.75rem;
+        border-radius: 0.25rem;
+        border: none;
+        background-color: #e5e7eb;
+        color: #374151;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+        background-color: #d1d5db;
+    }
+</style>
+{% endblock %}

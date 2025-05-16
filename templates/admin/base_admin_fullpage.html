@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+{% load user_tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block admin_title %}Admin Dashboard{% endblock %} - VenueBook Admin</title>
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom TailwindCSS Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#06113C',
+                        'accent': '#FF8C32',
+                        'light-gray': '#DDDDDD',
+                        'off-white': '#EEEEEE'
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS for patterns -->
+    <style>
+        .pattern-dots {
+            background-image: radial-gradient(currentColor 1px, transparent 1px);
+            background-size: calc(10 * 1px) calc(10 * 1px);
+        }
+        .pattern-size-2 {
+            background-size: calc(20 * 1px) calc(20 * 1px);
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
+
+    <!-- Admin Styles -->
+    <style>
+        /* Sidebar Styles */
+        .admin-sidebar {
+            background-color: #06113C;
+            background-image: linear-gradient(135deg, #06113C 0%, #0A1854 100%);
+            color: white;
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 40;
+            transition: transform 0.3s ease;
+        }
+
+        .admin-sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            margin: 0.25rem 0.75rem;
+        }
+
+        .admin-sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .admin-sidebar-link.active {
+            background-color: #FF8C32;
+            color: white;
+            font-weight: 500;
+        }
+
+        .admin-sidebar-link svg {
+            margin-right: 0.75rem;
+            transition: transform 0.2s;
+        }
+
+        .admin-sidebar-link:hover svg {
+            transform: scale(1.1);
+        }
+
+        .admin-sidebar-section {
+            margin-top: 1.5rem;
+            padding: 0 1.5rem;
+        }
+
+        .admin-sidebar-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.75rem;
+        }
+
+        .admin-sidebar-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 1rem 0;
+        }
+
+        .admin-main-content {
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* Mobile sidebar toggle */
+        .admin-sidebar-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 50;
+            background-color: #FF8C32;
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .admin-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .admin-main-content {
+                margin-left: 0;
+            }
+
+            .admin-sidebar-toggle {
+                display: flex;
+            }
+        }
+
+        .admin-stats-card {
+            @apply bg-white rounded-lg shadow-md border border-light-gray/50 p-6 transition-all duration-300 hover:shadow-lg;
+        }
+        .admin-dashboard-card {
+            @apply bg-white rounded-lg shadow-md border border-light-gray/50 overflow-hidden transition-all duration-300 hover:shadow-lg;
+        }
+        .admin-dashboard-card-header {
+            @apply flex justify-between items-center p-4 border-b border-light-gray/30 bg-primary/5;
+        }
+        /* Enhanced table styling */
+        .admin-dashboard-card .overflow-x-auto {
+            @apply p-1;
+        }
+        .admin-dashboard-table {
+            @apply min-w-full divide-y divide-light-gray/50 border-collapse;
+        }
+        .admin-dashboard-table th {
+            @apply px-6 py-3 text-left text-xs font-bold text-primary uppercase tracking-wider border-b-2 border-primary/20;
+        }
+        .admin-dashboard-table td {
+            @apply px-6 py-4 whitespace-nowrap text-sm text-gray-800;
+        }
+        .admin-dashboard-table tr {
+            @apply hover:bg-primary/10 transition-colors duration-200;
+        }
+        .admin-dashboard-table tbody tr:nth-child(even) {
+            @apply bg-gray-50/50;
+        }
+        .admin-dashboard-table tbody tr:last-child td:first-child {
+            @apply rounded-bl-lg;
+        }
+        .admin-dashboard-table tbody tr:last-child td:last-child {
+            @apply rounded-br-lg;
+        }
+        .admin-badge {
+            @apply px-2.5 py-1 text-xs rounded-full font-medium shadow-sm inline-flex items-center justify-center;
+        }
+        .admin-badge-success {
+            @apply bg-green-100 text-green-800 border border-green-200;
+        }
+        .admin-badge-warning {
+            @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+        }
+        .admin-badge-danger {
+            @apply bg-red-100 text-red-800 border border-red-200;
+        }
+        .admin-btn-primary {
+            @apply bg-accent text-white py-2 px-4 rounded-md hover:bg-accent/80 transition shadow-sm hover:shadow;
+        }
+        .admin-btn-secondary {
+            @apply bg-light-gray text-primary py-2 px-4 rounded-md hover:bg-light-gray/70 transition shadow-sm hover:shadow;
+        }
+        .admin-btn-sm {
+            @apply py-1 px-3 text-sm;
+        }
+        .admin-action-btn {
+            @apply inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm transition-all duration-200;
+        }
+        .admin-action-btn-view {
+            @apply admin-action-btn bg-accent/10 text-accent hover:bg-accent hover:text-white border border-accent/20;
+        }
+        .admin-action-btn-edit {
+            @apply admin-action-btn bg-primary/10 text-primary hover:bg-primary hover:text-white border border-primary/20;
+        }
+        .admin-action-btn-success {
+            @apply admin-action-btn bg-green-100 text-green-800 hover:bg-green-600 hover:text-white border border-green-200;
+        }
+
+
+        .admin-content-wrapper {
+            background-color: #f8f9fa;
+            background-image:
+                radial-gradient(#DDDDDD 1px, transparent 1px),
+                radial-gradient(#DDDDDD 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-attachment: fixed;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gradient-to-br from-off-white to-light-gray bg-fixed pattern-dots text-primary/5 pattern-size-2">
+    <!-- Messages -->
+    {% if messages %}
+    <div class="fixed top-4 right-4 z-50 w-96 max-w-full">
+        {% for message in messages %}
+            <div class="p-4 mb-4 rounded-md shadow-lg {% if message.tags == 'success' %}bg-accent/20 text-accent{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-primary/20 text-primary{% endif %}"
+                 x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                <div class="flex justify-between items-center">
+                    <p>{{ message }}</p>
+                    <button @click="show = false" class="text-gray-500 hover:text-gray-700">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div x-data="{ sidebarOpen: true }">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" :class="{ 'open': sidebarOpen }">
+            <div class="admin-sidebar-header">
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                            {{ user.get_full_name|default:user.username|slice:":1"|upper }}
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-semibold text-white">{{ user.get_full_name|default:user.username }}</h2>
+                        <p class="text-white/70 text-sm">Administrator</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="mt-6">
+                <div class="admin-sidebar-section">
+                    <h3 class="admin-sidebar-section-title">Main Navigation</h3>
+                </div>
+
+                <a href="{% url 'admin_dashboard' %}" class="admin-sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Dashboard
+                </a>
+
+                <a href="{% url 'admin_users' %}" class="admin-sidebar-link {% if request.resolver_match.url_name == 'admin_users' or request.resolver_match.url_name == 'admin_user_detail' or request.resolver_match.url_name == 'admin_user_edit' %}active{% endif %}">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    Users
+                </a>
+
+                <div class="admin-sidebar-divider"></div>
+
+                <div class="admin-sidebar-section">
+                    <h3 class="admin-sidebar-section-title">System</h3>
+                </div>
+
+                <a href="/admin/" class="admin-sidebar-link">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Django Admin
+                </a>
+
+                <a href="{% url 'home' %}" class="admin-sidebar-link">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Main Site
+                </a>
+
+                <div class="admin-sidebar-divider"></div>
+
+                <a href="{% url 'custom_logout' %}" class="admin-sidebar-link text-red-300 hover:text-red-100 hover:bg-red-500/30">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+
+            <div class="p-4 mt-8 mx-4 bg-white/10 rounded-lg">
+                <h3 class="font-semibold text-white mb-2">Admin Tips</h3>
+                <p class="text-white/70 text-sm">Use the dashboard to monitor system activity and manage users and venues efficiently.</p>
+            </div>
+        </aside>
+
+        <!-- Mobile sidebar toggle button -->
+        <button @click="sidebarOpen = !sidebarOpen" class="admin-sidebar-toggle">
+            <svg x-show="!sidebarOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <svg x-show="sidebarOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <!-- Main Content -->
+        <div class="admin-main-content admin-content-wrapper">
+            <div class="p-6 lg:p-8">
+                {% block admin_content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    {% include 'logout_form.html' %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

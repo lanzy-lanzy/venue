@@ -193,6 +193,7 @@
                     <th scope="col" class="text-primary/80 font-semibold">Date & Time</th>
                     <th scope="col" class="text-primary/80 font-semibold">Guests</th>
                     <th scope="col" class="text-primary/80 font-semibold">Status</th>
+                    <th scope="col" class="text-primary/80 font-semibold">Payment</th>
                     <th scope="col" class="text-primary/80 font-semibold">Price</th>
                     <th scope="col" class="text-primary/80 font-semibold">Actions</th>
                 </tr>
@@ -218,6 +219,40 @@
                         <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
                             {{ booking.status|title }}
                         </span>
+                    </td>
+                    <td>
+                        {% if booking.payments.exists %}
+                            {% with payment=booking.payments.first %}
+                                {% if payment.status == 'completed' %}
+                                    <a href="{% url 'manager_payment_detail' payment.id %}" class="badge badge-success flex items-center space-x-1 w-fit">
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span>Paid</span>
+                                    </a>
+                                {% elif payment.status == 'pending' %}
+                                    <a href="{% url 'manager_payment_detail' payment.id %}" class="badge badge-warning flex items-center space-x-1 w-fit">
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span>Verify</span>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'manager_payment_detail' payment.id %}" class="badge badge-danger flex items-center space-x-1 w-fit">
+                                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        <span>Failed</span>
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            {% if booking.status == 'confirmed' %}
+                                <span class="text-gray-500 text-sm">Not Paid</span>
+                            {% else %}
+                                <span class="text-gray-400 text-sm">-</span>
+                            {% endif %}
+                        {% endif %}
                     </td>
                     <td class="text-accent font-medium">
                         ${{ booking.total_price }}
