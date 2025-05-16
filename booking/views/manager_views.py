@@ -7,6 +7,7 @@ from django.http import HttpResponseForbidden
 from booking.models import Venue, TimeSlot, Booking, Category, VenueManager, Payment
 from booking.forms import VenueForm, TimeSlotForm
 from booking.decorators import venue_manager_required
+from booking.utils.email_utils import send_booking_confirmation_email
 
 
 @login_required
@@ -275,7 +276,13 @@ def manager_confirm_booking(request, booking_id):
     booking.time_slot.is_available = False
     booking.time_slot.save()
 
-    messages.success(request, f'Booking #{booking.id} has been confirmed successfully.')
+    # Send email notification to the user
+    try:
+        send_booking_confirmation_email(booking)
+        messages.success(request, f'Booking #{booking.id} has been confirmed successfully and email notification sent to {booking.user.email}.')
+    except Exception as e:
+        messages.warning(request, f'Booking #{booking.id} has been confirmed successfully, but there was an error sending the email notification: {str(e)}')
+
     return redirect('manager_bookings')
 
 

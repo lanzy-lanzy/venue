@@ -259,7 +259,7 @@
                     </a>
 
                     {% if booking.status == 'pending' %}
-                    <a href="{% url 'manager_confirm_booking' booking.id %}" class="btn-success" onclick="return confirm('Are you sure you want to confirm this booking?');">
+                    <a href="{% url 'manager_confirm_booking' booking.id %}" class="btn-success" onclick="return confirm('Are you sure you want to confirm this booking? An email notification will be sent to the user.');">
                         Confirm Booking
                     </a>
                     {% endif %}
