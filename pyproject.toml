@@ -9,6 +9,7 @@ dependencies = [
     "django-tailwind",
     "pillow",  # For image handling
     "django-htmx",  # For HTMX integration
+    "reportlab",  # For PDF generation
 ]
 
 [tool.uv]

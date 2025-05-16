@@ -51,6 +51,9 @@ urlpatterns = [
     path('manager/payments/<int:payment_id>/verify/', views.manager_verify_payment, name='manager_verify_payment'),
     path('manager/payments/<int:payment_id>/reject/', views.manager_reject_payment, name='manager_reject_payment'),
 
+    # Manager Reports
+    path('manager/reports/sales/', views.manager_sales_report, name='manager_sales_report'),
+
     # Custom Admin URLs - separate from Django's built-in admin
     path('admin-dashboard/', include('booking.urls_admin')),
 ]

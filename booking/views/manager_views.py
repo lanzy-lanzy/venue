@@ -3,11 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from booking.models import Venue, TimeSlot, Booking, Category, VenueManager, Payment
 from booking.forms import VenueForm, TimeSlotForm
 from booking.decorators import venue_manager_required
 from booking.utils.email_utils import send_booking_confirmation_email
+from booking.utils.report_utils import generate_sales_report_pdf
+import datetime
 
 
 @login_required
@@ -458,3 +460,71 @@ def manager_reject_payment(request, payment_id):
 
     messages.success(request, f'Payment for Booking #{payment.booking.id} has been rejected.')
     return redirect('manager_payment_detail', payment_id=payment.id)
+
+
+@login_required
+@venue_manager_required
+def manager_sales_report(request):
+    """
+    View for generating a sales report.
+    """
+    manager = request.user.venue_manager
+    venues = Venue.objects.filter(manager=manager)
+
+    # Get filter parameters
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    venue_id = request.GET.get('venue_id')
+
+    # Parse dates
+    start_date = None
+    end_date = None
+
+    if start_date_str:
+        try:
+            start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, 'Invalid start date format. Please use YYYY-MM-DD.')
+            return redirect('manager_sales_report')
+
+    if end_date_str:
+        try:
+            end_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, 'Invalid end date format. Please use YYYY-MM-DD.')
+            return redirect('manager_sales_report')
+
+    # Check if we should generate a PDF
+    if 'generate_pdf' in request.GET and start_date and end_date:
+        # Check if manager has any venues
+        if not Venue.objects.filter(manager=manager).exists():
+            messages.error(request, 'You do not have any venues to generate a report for.')
+            return redirect('manager_sales_report')
+
+        # Generate PDF
+        pdf = generate_sales_report_pdf(manager, start_date, end_date, venue_id)
+
+        # Create filename
+        if venue_id:
+            venue = get_object_or_404(Venue, id=venue_id, manager=manager)
+            filename = f"sales_report_{venue.name}_{start_date}_{end_date}.pdf"
+        else:
+            filename = f"sales_report_{start_date}_{end_date}.pdf"
+
+        # Replace spaces with underscores in filename
+        filename = filename.replace(' ', '_')
+
+        # Create response
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+
+    # If not generating PDF, show the form
+    context = {
+        'venues': venues,
+        'manager': manager,
+        'start_date': start_date_str,
+        'end_date': end_date_str,
+        'venue_id': venue_id,
+    }
+    return render(request, 'manager/sales_report.html', context)

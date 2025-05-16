@@ -20,7 +20,8 @@ from .manager_views import (
     manager_payments,
     manager_payment_detail,
     manager_verify_payment,
-    manager_reject_payment
+    manager_reject_payment,
+    manager_sales_report
 )
 from .admin_views import (
     admin_dashboard,
@@ -71,6 +72,7 @@ __all__ = [
     'manager_payment_detail',
     'manager_verify_payment',
     'manager_reject_payment',
+    'manager_sales_report',
     # Admin views
     'admin_dashboard',
     'admin_users',
