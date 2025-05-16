@@ -278,12 +278,31 @@ def manager_confirm_booking(request, booking_id):
     booking.time_slot.is_available = False
     booking.time_slot.save()
 
-    # Send email notification to the user
-    try:
-        send_booking_confirmation_email(booking)
-        messages.success(request, f'Booking #{booking.id} has been confirmed successfully and email notification sent to {booking.user.email}.')
-    except Exception as e:
-        messages.warning(request, f'Booking #{booking.id} has been confirmed successfully, but there was an error sending the email notification: {str(e)}')
+    # Send email notification to the user with a timeout
+    import threading
+    import time
+
+    def send_email_with_timeout():
+        try:
+            # Add a small delay to ensure the loading spinner is shown
+            time.sleep(1)
+
+            # Send the email
+            send_booking_confirmation_email(booking)
+
+            # Add success message to the messages framework
+            messages.success(request, f'Booking #{booking.id} has been confirmed successfully and email notification sent to {booking.user.email}.')
+        except Exception as e:
+            # Add warning message to the messages framework
+            messages.warning(request, f'Booking #{booking.id} has been confirmed successfully, but there was an error sending the email notification: {str(e)}')
+
+    # Start a new thread to send the email
+    email_thread = threading.Thread(target=send_email_with_timeout)
+    email_thread.daemon = True
+    email_thread.start()
+
+    # Wait for the thread to complete, but with a timeout
+    email_thread.join(timeout=60)  # 60 seconds timeout
 
     return redirect('manager_bookings')
 
