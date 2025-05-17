@@ -42,7 +42,7 @@
 
                             <div>
                                 <p class="text-gray-700 text-sm font-medium">Total Amount</p>
-                                <p class="font-bold text-accent text-xl">${{ booking.total_price }}</p>
+                                <p class="font-bold text-accent text-xl">₱{{ booking.total_price }}</p>
                             </div>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                                         <li>Open your GCash app</li>
                                         <li>Go to <span class="font-medium text-blue-700">Send Money</span></li>
                                         <li>Enter the GCash number: <span class="font-bold text-blue-800">09123456789</span></li>
-                                        <li>Enter the exact amount: <span class="font-bold text-blue-800">${{ booking.total_price }}</span></li>
+                                        <li>Enter the exact amount: <span class="font-bold text-blue-800">₱{{ booking.total_price }}</span></li>
                                         <li>Add a note: <span class="font-bold text-blue-800">Booking #{{ booking.id }}</span></li>
                                         <li>Complete the transaction and take a screenshot of the confirmation</li>
                                         <li>Enter the reference number and upload the screenshot below</li>

@@ -18,11 +18,11 @@
         <div class="p-4 border rounded-md bg-gray-50">
             <div class="flex justify-between items-start">
                 <div>
-                    <h3 class="font-semibold text-lg">{{ notification.title }}</h3>
-                    <p class="text-sm text-gray-500">{{ notification.created_at|date:"F j, Y, g:i a" }}</p>
+                    <h3 class="font-semibold text-lg text-gray-900">{{ notification.title }}</h3>
+                    <p class="text-sm text-gray-600">{{ notification.created_at|date:"F j, Y, g:i a" }}</p>
                 </div>
             </div>
-            <div class="mt-4 text-gray-700 whitespace-pre-line">
+            <div class="mt-4 text-gray-900 whitespace-pre-line">
                 {{ notification.message }}
             </div>
             {% if notification.related_object_id and notification.related_object_type == 'booking' %}

@@ -115,8 +115,8 @@ def generate_sales_report_pdf(manager, start_date=None, end_date=None, venue_id=
     # Add summary statistics
     summary_data = [
         ["Total Bookings", str(total_bookings)],
-        ["Total Revenue", f"${total_revenue:.2f}"],
-        ["Total Payments Received", f"${total_payments:.2f}"],
+        ["Total Revenue", f"₱{total_revenue:.2f}"],
+        ["Total Payments Received", f"₱{total_payments:.2f}"],
     ]
 
     summary_table = Table(summary_data, colWidths=[3*inch, 2*inch])
@@ -152,7 +152,7 @@ def generate_sales_report_pdf(manager, start_date=None, end_date=None, venue_id=
         venue_data.append([
             venue.name,
             str(booking_count),
-            f"${venue_revenue:.2f}"
+            f"₱{venue_revenue:.2f}"
         ])
 
         if booking_count > 0:
@@ -225,7 +225,7 @@ def generate_sales_report_pdf(manager, start_date=None, end_date=None, venue_id=
                 booking.venue.name,
                 booking.time_slot.date.strftime('%b %d, %Y'),
                 f"{booking.time_slot.start_time.strftime('%I:%M %p')} - {booking.time_slot.end_time.strftime('%I:%M %p')}",
-                f"${booking.total_price:.2f}"
+                f"₱{booking.total_price:.2f}"
             ])
 
         booking_table = Table(booking_data, colWidths=[0.75*inch, 2*inch, 2*inch, 1*inch, 2*inch, 1*inch])

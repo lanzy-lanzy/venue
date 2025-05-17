@@ -52,7 +52,7 @@
                                 {{ booking.get_status_display }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ booking.total_price }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₱{{ booking.total_price }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a href="{% url 'booking_detail' booking.id %}" class="text-accent hover:text-accent/80 mr-3">View</a>
                             {% if booking.status != 'cancelled' %}

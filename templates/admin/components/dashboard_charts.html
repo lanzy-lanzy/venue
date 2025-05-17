@@ -48,13 +48,13 @@
     // Set Chart.js defaults
     Chart.defaults.font.family = "'Inter', 'Helvetica', 'Arial', sans-serif";
     Chart.defaults.color = '#64748b';
-    
+
     // Booking Chart
     let bookingsChart;
-    
+
     function initBookingChart() {
         const ctx = document.getElementById('bookingsChart').getContext('2d');
-        
+
         // Sample data - in a real app, this would come from the backend
         const weeklyData = {
             labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -77,7 +77,7 @@
                 }
             ]
         };
-        
+
         bookingsChart = new Chart(ctx, {
             type: 'line',
             data: weeklyData,
@@ -109,7 +109,7 @@
             }
         });
     }
-    
+
     function updateBookingChart(period) {
         // Update active button
         document.querySelectorAll('#bookingsChart').forEach(chart => {
@@ -118,10 +118,10 @@
             });
         });
         event.target.classList.add('active-chart-btn');
-        
+
         // Sample data for different periods
         let newData;
-        
+
         if (period === 'monthly') {
             newData = {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -167,17 +167,17 @@
                 ]
             };
         }
-        
+
         bookingsChart.data = newData;
         bookingsChart.update();
     }
-    
+
     // Venues Chart
     let venuesChart;
-    
+
     function initVenuesChart() {
         const ctx = document.getElementById('venuesChart').getContext('2d');
-        
+
         // Sample data - in a real app, this would come from the backend
         const bookingsData = {
             labels: ['Conference Room', 'Rooftop Garden', 'Auditorium', 'Banquet Hall', 'Meeting Room'],
@@ -194,7 +194,7 @@
                 borderWidth: 0
             }]
         };
-        
+
         venuesChart = new Chart(ctx, {
             type: 'bar',
             data: bookingsData,
@@ -222,7 +222,7 @@
             }
         });
     }
-    
+
     function updateVenuesChart(metric) {
         // Update active button
         document.querySelectorAll('#venuesChart').forEach(chart => {
@@ -231,15 +231,15 @@
             });
         });
         event.target.classList.add('active-chart-btn');
-        
+
         // Sample data for different metrics
         let newData;
-        
+
         if (metric === 'revenue') {
             newData = {
                 labels: ['Conference Room', 'Rooftop Garden', 'Auditorium', 'Banquet Hall', 'Meeting Room'],
                 datasets: [{
-                    label: 'Revenue ($)',
+                    label: 'Revenue (₱)',
                     data: [4200, 3800, 3500, 2800, 1900],
                     backgroundColor: [
                         'rgba(6, 17, 60, 0.8)',
@@ -268,16 +268,16 @@
                 }]
             };
         }
-        
+
         venuesChart.data = newData;
         venuesChart.update();
     }
-    
+
     // Initialize charts when the page loads
     document.addEventListener('DOMContentLoaded', function() {
         initBookingChart();
         initVenuesChart();
-        
+
         // Add active class styling
         document.querySelectorAll('.active-chart-btn').forEach(btn => {
             btn.style.backgroundColor = 'rgba(6, 17, 60, 0.2)';

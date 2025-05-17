@@ -23,8 +23,8 @@
                     <div class="p-4 border rounded-md {% if not notification.is_read %}border-l-4 border-l-accent bg-accent/5{% else %}bg-gray-50{% endif %}">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="font-semibold text-lg">{{ notification.title }}</h3>
-                                <p class="text-sm text-gray-500">{{ notification.created_at|date:"F j, Y, g:i a" }}</p>
+                                <h3 class="font-semibold text-lg text-gray-900">{{ notification.title }}</h3>
+                                <p class="text-sm text-gray-600">{{ notification.created_at|date:"F j, Y, g:i a" }}</p>
                             </div>
                             {% if not notification.is_read %}
                                 <a href="{% url 'mark_notification_read' notification.id %}" class="text-accent hover:text-accent/80">
@@ -32,7 +32,7 @@
                                 </a>
                             {% endif %}
                         </div>
-                        <div class="mt-2 text-gray-700 whitespace-pre-line">
+                        <div class="mt-2 text-gray-900 whitespace-pre-line">
                             {{ notification.message }}
                         </div>
                         {% if notification.related_object_id and notification.related_object_type == 'booking' %}

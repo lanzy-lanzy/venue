@@ -41,7 +41,7 @@
                 <div class="mb-4">
                     <p class="text-gray-600"><strong>Address:</strong> {{ venue.address }}</p>
                     <p class="text-gray-600"><strong>Capacity:</strong> {{ venue.capacity }} people</p>
-                    <p class="text-accent font-bold text-xl">${{ venue.hourly_rate }}/hour</p>
+                    <p class="text-accent font-bold text-xl">₱{{ venue.hourly_rate }}/hour</p>
                 </div>
 
                 <div class="mb-6">
@@ -49,7 +49,7 @@
                     <p class="text-gray-600">{{ venue.description }}</p>
                 </div>
 
-                <a href="#booking-section" class="bg-accent text-white py-2 px-6 rounded-md hover:bg-accent/80 transition inline-block">Book Now</a>
+                <a href="#booking-section" class="bg-accent text-white py-2 px-6 rounded-md hover:bg-accent/80 transition inline-block">View Availability</a>
             </div>
         </div>
     </div>
@@ -62,13 +62,13 @@
             {% if available_slots %}
                 <div x-data="{ selectedDate: '' }">
                     <div class="mb-6">
-                        <label for="booking-date" class="block text-gray-700 font-medium mb-2">Select Date</label>
+                        <label for="booking-date" class="block text-gray-900 font-medium mb-2">Select Date</label>
                         <select id="booking-date" x-model="selectedDate"
                                 hx-get="{% url 'get_available_slots' venue.id %}"
                                 hx-target="#time-slots-container"
                                 hx-trigger="change"
                                 hx-include="[name='date']"
-                                class="w-full px-4 py-2 border rounded-md text-gray-800 focus:outline-none focus:ring-2 focus:ring-accent">
+                                class="w-full px-4 py-2 border rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-accent">
                             <option value="">Select a date</option>
                             {% regroup available_slots by date as date_list %}
                             {% for date_group in date_list %}
@@ -79,14 +79,14 @@
                     </div>
 
                     <div id="time-slots-container" class="mb-6">
-                        <p class="text-gray-600">Please select a date to see available time slots.</p>
+                        <p class="text-gray-900">Please select a date to see available time slots.</p>
                     </div>
                 </div>
             {% else %}
                 <div class="bg-yellow-100 text-yellow-800 p-4 rounded-md mb-4 border border-yellow-200">
                     <p>No available time slots for this venue in the next 7 days.</p>
                 </div>
-                <p class="text-gray-600">Please check back later or contact us for special arrangements.</p>
+                <p class="text-gray-900">Please check back later or contact us for special arrangements.</p>
             {% endif %}
         {% else %}
             <div class="bg-primary/10 text-primary p-4 rounded-md mb-4 border border-light-gray/30">
@@ -161,7 +161,7 @@
                             <div class="p-4">
                                 <h3 class="text-lg font-semibold mb-1 text-primary">{{ similar_venue.name }}</h3>
                                 <p class="text-gray-600 text-sm mb-2 truncate">{{ similar_venue.address }}</p>
-                                <p class="text-accent font-bold mb-2">${{ similar_venue.hourly_rate }}/hour</p>
+                                <p class="text-accent font-bold mb-2">₱{{ similar_venue.hourly_rate }}/hour</p>
 
                                 <a href="{% url 'venue_detail' similar_venue.id %}" class="text-accent hover:text-accent/80 text-sm font-medium">View Details</a>
                             </div>

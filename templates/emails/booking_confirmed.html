@@ -73,12 +73,12 @@
     <div class="header">
         <h1>Booking Confirmation</h1>
     </div>
-    
+
     <div class="content">
         <p>Dear {{ user.get_full_name|default:user.username }},</p>
-        
+
         <p>Great news! Your booking at <span class="highlight">{{ venue.name }}</span> has been confirmed by the venue manager.</p>
-        
+
         <div class="booking-details">
             <h2>Booking Details</h2>
             <table>
@@ -108,18 +108,18 @@
                 </tr>
                 <tr>
                     <td>Total Price:</td>
-                    <td>${{ booking.total_price }}</td>
+                    <td>₱{{ booking.total_price }}</td>
                 </tr>
             </table>
         </div>
-        
+
         <p>If you have any questions or need to make changes to your booking, please contact us or the venue directly.</p>
-        
+
         <p>Thank you for choosing {{ site_name }}!</p>
-        
+
         <a href="http://localhost:8000/booking/{{ booking.id }}/" class="btn">View Booking Details</a>
     </div>
-    
+
     <div class="footer">
         <p>&copy; {{ site_name }} | This is an automated email, please do not reply.</p>
     </div>

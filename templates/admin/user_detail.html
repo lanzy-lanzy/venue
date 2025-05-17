@@ -203,7 +203,7 @@
                         {% endif %}
                     </td>
                     <td>{{ booking.num_guests }}</td>
-                    <td>${{ booking.total_price }}</td>
+                    <td>₱{{ booking.total_price }}</td>
                     <td>{{ booking.booking_date|date:"M d, Y" }}</td>
                 </tr>
                 {% empty %}
@@ -229,7 +229,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Address</th>
                     <th scope="col">Capacity</th>
-                    <th scope="col">Hourly Rate</th>
+                    <th scope="col">Rate</th>
                     <th scope="col">Status</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -240,7 +240,7 @@
                     <td class="font-medium text-gray-900">{{ venue.name }}</td>
                     <td>{{ venue.address }}</td>
                     <td>{{ venue.capacity }}</td>
-                    <td>${{ venue.hourly_rate }}</td>
+                    <td>₱{{ venue.hourly_rate }}</td>
                     <td>
                         {% if venue.status == 'active' %}
                             <span class="admin-badge admin-badge-success">Active</span>

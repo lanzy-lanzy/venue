@@ -96,8 +96,8 @@
                         <p class="mt-1 text-lg font-medium text-gray-900">{{ venue.capacity }} people</p>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-500">Hourly Rate</h3>
-                        <p class="mt-1 text-lg font-medium text-gray-900">${{ venue.hourly_rate }}</p>
+                        <h3 class="text-sm font-medium text-gray-500">Rate</h3>
+                        <p class="mt-1 text-lg font-medium text-gray-900">₱{{ venue.hourly_rate }}</p>
                     </div>
                     <div>
                         <h3 class="text-sm font-medium text-gray-500">Categories</h3>
@@ -255,7 +255,7 @@
                             <span class="admin-badge admin-badge-danger">Cancelled</span>
                         {% endif %}
                     </td>
-                    <td>${{ booking.total_price }}</td>
+                    <td>₱{{ booking.total_price }}</td>
                     <td>{{ booking.booking_date|date:"M d, Y" }}</td>
                 </tr>
                 {% empty %}

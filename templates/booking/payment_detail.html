@@ -59,7 +59,7 @@
 
                         <div>
                             <p class="text-gray-600 text-sm">Amount</p>
-                            <p class="font-medium text-accent">${{ payment.amount }}</p>
+                            <p class="font-medium text-accent">₱{{ payment.amount }}</p>
                         </div>
 
                         {% if payment.notes %}
@@ -90,17 +90,17 @@
                                 <p class="text-gray-600 text-sm">Booking ID</p>
                                 <p class="font-medium">#{{ payment.booking.id }}</p>
                             </div>
-                            
+
                             <div>
                                 <p class="text-gray-600 text-sm">Venue</p>
                                 <p class="font-medium">{{ payment.booking.venue.name }}</p>
                             </div>
-                            
+
                             <div>
                                 <p class="text-gray-600 text-sm">Date & Time</p>
                                 <p class="font-medium">{{ payment.booking.time_slot.date|date:"F j, Y" }}, {{ payment.booking.time_slot.start_time|time:"g:i A" }} - {{ payment.booking.time_slot.end_time|time:"g:i A" }}</p>
                             </div>
-                            
+
                             <div>
                                 <p class="text-gray-600 text-sm">Status</p>
                                 <p class="font-medium">{{ payment.booking.status|title }}</p>
