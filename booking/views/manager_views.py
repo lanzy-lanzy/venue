@@ -8,6 +8,7 @@ from booking.models import Venue, TimeSlot, Booking, Category, VenueManager, Pay
 from booking.forms import VenueForm, TimeSlotForm
 from booking.decorators import venue_manager_required
 from booking.utils.email_utils import send_booking_confirmation_email
+from booking.utils.notification_utils import create_booking_confirmation_notification
 from booking.utils.report_utils import generate_sales_report_pdf
 import datetime
 
@@ -265,9 +266,9 @@ def manager_confirm_booking(request, booking_id):
     if booking.venue.manager != manager:
         return HttpResponseForbidden("You don't have permission to confirm this booking.")
 
-    # Check if the booking is pending
-    if booking.status != 'pending':
-        messages.error(request, 'Only pending bookings can be confirmed.')
+    # Check if the booking is pending or free
+    if booking.status != 'pending' and booking.status != 'free':
+        messages.error(request, 'Only pending or free venue bookings can be confirmed.')
         return redirect('manager_bookings')
 
     # Confirm the booking
@@ -278,31 +279,19 @@ def manager_confirm_booking(request, booking_id):
     booking.time_slot.is_available = False
     booking.time_slot.save()
 
-    # Send email notification to the user with a timeout
-    import threading
-    import time
+    # Create a notification for the user
+    try:
+        # Create the notification
+        notification = create_booking_confirmation_notification(booking)
 
-    def send_email_with_timeout():
-        try:
-            # Add a small delay to ensure the loading spinner is shown
-            time.sleep(1)
-
-            # Send the email
-            send_booking_confirmation_email(booking)
-
-            # Add success message to the messages framework
-            messages.success(request, f'Booking #{booking.id} has been confirmed successfully and email notification sent to {booking.user.email}.')
-        except Exception as e:
-            # Add warning message to the messages framework
-            messages.warning(request, f'Booking #{booking.id} has been confirmed successfully, but there was an error sending the email notification: {str(e)}')
-
-    # Start a new thread to send the email
-    email_thread = threading.Thread(target=send_email_with_timeout)
-    email_thread.daemon = True
-    email_thread.start()
-
-    # Wait for the thread to complete, but with a timeout
-    email_thread.join(timeout=60)  # 60 seconds timeout
+        # Add success message to the messages framework
+        if booking.is_free_venue():
+            messages.success(request, f'Booking #{booking.id} for free venue has been confirmed successfully and notification sent to {booking.user.username}.')
+        else:
+            messages.success(request, f'Booking #{booking.id} has been confirmed successfully and notification sent to {booking.user.username}.')
+    except Exception as e:
+        # Add warning message to the messages framework
+        messages.warning(request, f'Booking #{booking.id} has been confirmed successfully, but there was an error creating the notification: {str(e)}')
 
     return redirect('manager_bookings')
 

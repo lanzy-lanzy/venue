@@ -18,8 +18,9 @@
                 <span class="px-3 py-1 rounded-full text-sm font-semibold
                     {% if booking.status == 'confirmed' %}bg-green-500 text-white
                     {% elif booking.status == 'pending' %}bg-yellow-400 text-gray-800
+                    {% elif booking.status == 'free' %}bg-green-500 text-white
                     {% else %}bg-red-500 text-white{% endif %}">
-                    {{ booking.status|title }}
+                    {{ booking.get_status_display }}
                 </span>
             </div>
         </div>
@@ -43,7 +44,7 @@
 
                         <div>
                             <p class="text-gray-600 text-sm">Status</p>
-                            <p class="font-medium">{{ booking.status|title }}</p>
+                            <p class="font-medium">{{ booking.get_status_display }}</p>
                         </div>
 
                         <div>
@@ -126,6 +127,21 @@
                 </div>
             </div>
         </div>
+        {% elif booking.status == 'free' %}
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-green-700">
+                        Your free venue booking is confirmed! Please arrive 15 minutes before your scheduled time.
+                    </p>
+                </div>
+            </div>
+        </div>
         {% elif booking.status == 'confirmed' %}
         <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
             <div class="flex">
@@ -146,7 +162,22 @@
         <div class="mt-6 border-t border-gray-200 pt-6">
             <h3 class="text-lg font-semibold mb-4 text-primary">Payment Options</h3>
 
-            {% if booking.payments.exists %}
+            {% if booking.is_free_venue %}
+                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-green-700">
+                                This is a free venue! No payment is required.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% elif booking.payments.exists %}
                 {% with payment=booking.payments.first %}
                     {% if payment.status == 'completed' %}
                         <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
@@ -214,32 +245,34 @@
                     {% endif %}
                 {% endwith %}
             {% else %}
-                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-blue-700">
-                                Your booking is confirmed! Please complete the payment to secure your reservation.
-                            </p>
+                {% if not booking.is_free_venue %}
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    Your booking is confirmed! Please complete the payment to secure your reservation.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="bg-white border border-light-gray/30 rounded-lg p-4 mb-4">
-                    <h4 class="font-semibold text-gray-800 mb-2">Pay with GCash</h4>
-                    <p class="text-gray-600 text-sm mb-4">
-                        Make your payment quickly and securely using GCash. You'll need to provide the reference number and a screenshot of your payment confirmation.
-                    </p>
-                    <div class="flex justify-end">
-                        <a href="{% url 'submit_payment' booking.id %}" class="bg-accent text-white py-2 px-4 rounded hover:bg-accent/80 transition">
-                            Pay Now
-                        </a>
+                    <div class="bg-white border border-light-gray/30 rounded-lg p-4 mb-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Pay with GCash</h4>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Make your payment quickly and securely using GCash. You'll need to provide the reference number and a screenshot of your payment confirmation.
+                        </p>
+                        <div class="flex justify-end">
+                            <a href="{% url 'submit_payment' booking.id %}" class="bg-accent text-white py-2 px-4 rounded hover:bg-accent/80 transition">
+                                Pay Now
+                            </a>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             {% endif %}
         </div>
         {% else %}

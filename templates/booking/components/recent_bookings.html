@@ -41,12 +41,14 @@
                         <div class="text-sm text-gray-500">{{ booking.time_slot.start_time|time:"g:i A" }}</div>
                     </td>
                     <td>
-                        <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
-                            {{ booking.status|title }}
+                        <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% elif booking.status == 'free' %}badge-success{% else %}badge-danger{% endif %}">
+                            {{ booking.get_status_display }}
                         </span>
                     </td>
                     <td>
-                        {% if booking.payments.exists %}
+                        {% if booking.is_free_venue %}
+                            <span class="badge badge-success">Free</span>
+                        {% elif booking.payments.exists %}
                             {% with payment=booking.payments.first %}
                                 {% if payment.status == 'completed' %}
                                     <span class="badge badge-success">Paid</span>

@@ -27,6 +27,12 @@ urlpatterns = [
     path('profile/update-picture/', views.update_profile_picture, name='update_profile_picture'),
     path('logout/', views.logout_view, name='custom_logout'),
 
+    # Notifications
+    path('notifications/', views.notifications, name='notifications'),
+    path('notifications/<int:notification_id>/', views.notification_detail, name='notification_detail'),
+    path('notifications/<int:notification_id>/mark-read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+
     # HTMX endpoints
     path('venues/<int:venue_id>/available-slots/', views.get_available_slots, name='get_available_slots'),
     path('manager/venues/<int:venue_id>/edit-modal/', views.venue_edit_modal, name='venue_edit_modal'),

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load user_tags %}
+
+{% block title %}Notification: {{ notification.title }}{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="p-6 bg-primary text-white border-b border-primary/30">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Notification Details</h1>
+            <a href="{% url 'notifications' %}" class="btn-accent text-sm">
+                Back to Notifications
+            </a>
+        </div>
+    </div>
+
+    <div class="p-6">
+        <div class="p-4 border rounded-md bg-gray-50">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="font-semibold text-lg">{{ notification.title }}</h3>
+                    <p class="text-sm text-gray-500">{{ notification.created_at|date:"F j, Y, g:i a" }}</p>
+                </div>
+            </div>
+            <div class="mt-4 text-gray-700 whitespace-pre-line">
+                {{ notification.message }}
+            </div>
+            {% if notification.related_object_id and notification.related_object_type == 'booking' %}
+                <div class="mt-6">
+                    <a href="{% url 'booking_detail' notification.related_object_id %}" class="btn-outline-primary">
+                        View Booking
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

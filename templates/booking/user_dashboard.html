@@ -71,6 +71,7 @@
     </div>
 {% include 'partials/user_profile_picture_modal.html' %}
 {% include 'partials/edit_profile_modal.html' %}
+{% include 'partials/notification_modal.html' %}
 
 <script>
     // Function to open the profile picture modal
@@ -86,6 +87,11 @@
     // Function to close a modal
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Function to open the notification modal
+    function openNotificationModal() {
+        document.getElementById('notification-modal').style.display = 'flex';
     }
 
     // Function to submit profile picture form
@@ -167,6 +173,16 @@
             editProfileModal.addEventListener('click', function(event) {
                 if (event.target === editProfileModal) {
                     closeModal('edit-profile-modal');
+                }
+            });
+        }
+
+        // Notification modal
+        const notificationModal = document.getElementById('notification-modal');
+        if (notificationModal) {
+            notificationModal.addEventListener('click', function(event) {
+                if (event.target === notificationModal) {
+                    closeModal('notification-modal');
                 }
             });
         }

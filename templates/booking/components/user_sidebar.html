@@ -17,8 +17,20 @@
                     </svg>
                 </div>
             </div>
-            <div>
-                <h2 class="text-xl font-semibold text-white">{{ profile.user.get_full_name|default:profile.user.username }}</h2>
+            <div class="flex-grow">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-white">{{ profile.user.get_full_name|default:profile.user.username }}</h2>
+                    <a href="javascript:void(0);" onclick="openNotificationModal()" class="relative">
+                        <svg class="h-6 w-6 text-white hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        {% if unread_notification_count > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full h-5 w-5 flex items-center justify-center notification-counter">
+                                {{ unread_notification_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+                </div>
                 <p class="text-white/70 text-sm">{{ profile.get_role_display }}</p>
             </div>
         </div>
@@ -41,6 +53,17 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
                 Payment History
+            </a>
+            <a href="javascript:void(0);" onclick="openNotificationModal()" class="sidebar-link {% if active_page == 'notifications' %}active{% endif %}">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                Notifications
+                {% if unread_notification_count > 0 %}
+                <span class="ml-auto bg-accent text-white text-xs rounded-full h-5 w-5 flex items-center justify-center notification-counter">
+                    {{ unread_notification_count }}
+                </span>
+                {% endif %}
             </a>
             <a href="{% url 'venue_list' %}" class="sidebar-link {% if active_page == 'venues' %}active{% endif %}">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -79,8 +79,8 @@
                     </svg>
                     Booking #{{ booking.id }}
                 </h2>
-                <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
-                    {{ booking.status|title }}
+                <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% elif booking.status == 'free' %}badge-success{% else %}badge-danger{% endif %}">
+                    {{ booking.get_status_display }}
                 </span>
             </div>
 
@@ -105,8 +105,8 @@
                             <div>
                                 <p class="text-gray-600 text-sm">Status</p>
                                 <p class="font-medium">
-                                    <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
-                                        {{ booking.status|title }}
+                                    <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% elif booking.status == 'free' %}badge-success{% else %}badge-danger{% endif %}">
+                                        {{ booking.get_status_display }}
                                     </span>
                                 </p>
                             </div>
@@ -183,7 +183,22 @@
                 <div class="mt-8 border-t border-light-gray pt-6">
                     <h3 class="text-lg font-semibold mb-4 text-primary">Payment Information</h3>
 
-                    {% if booking.payments.exists %}
+                    {% if booking.is_free_venue %}
+                        <div class="bg-green-50 p-4 rounded-md mb-6 border-l-4 border-green-400">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-700 font-medium">
+                                        This is a free venue! No payment is required.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif booking.payments.exists %}
                         {% with payment=booking.payments.first %}
                         <div class="bg-light-gray/20 p-4 rounded-md mb-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -243,12 +258,14 @@
                         </div>
                         {% endwith %}
                     {% else %}
-                        <div class="bg-light-gray/20 p-4 rounded-md mb-6 text-center">
-                            <p class="text-gray-600">No payment information available for this booking.</p>
-                            {% if booking.status == 'confirmed' %}
-                            <p class="text-gray-600 mt-2">The customer has not submitted a payment yet.</p>
-                            {% endif %}
-                        </div>
+                        {% if not booking.is_free_venue %}
+                            <div class="bg-light-gray/20 p-4 rounded-md mb-6 text-center">
+                                <p class="text-gray-600">No payment information available for this booking.</p>
+                                {% if booking.status == 'confirmed' %}
+                                <p class="text-gray-600 mt-2">The customer has not submitted a payment yet.</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     {% endif %}
                 </div>
 
@@ -258,8 +275,8 @@
                         Back to Bookings
                     </a>
 
-                    {% if booking.status == 'pending' %}
-                    <a href="{% url 'manager_confirm_booking' booking.id %}" class="btn-success" onclick="if(confirm('Are you sure you want to confirm this booking? An email notification will be sent to the user.')) { showLoadingModal(); return true; } else { return false; }">
+                    {% if booking.status == 'pending' or booking.status == 'free' %}
+                    <a href="{% url 'manager_confirm_booking' booking.id %}" class="btn-success" onclick="if(confirm('Are you sure you want to confirm this booking? A notification will be sent to the user.')) { showLoadingModal(); return true; } else { return false; }">
                         Confirm Booking
                     </a>
                     {% endif %}
@@ -287,8 +304,8 @@
             </svg>
         </div>
         <h3 class="text-xl font-semibold text-primary mb-2">Confirming Booking...</h3>
-        <p class="text-gray-600 mb-4">Please wait while we confirm the booking and send an email notification to the customer.</p>
-        <p class="text-sm text-gray-500">This may take up to 60 seconds.</p>
+        <p class="text-gray-600 mb-4">Please wait while we confirm the booking and send a notification to the customer.</p>
+        <p class="text-sm text-gray-500">This will only take a moment.</p>
     </div>
 </div>
 

@@ -5,6 +5,7 @@ from .htmx_views import get_available_slots, venue_edit_modal, venue_add_modal
 from .user_views import edit_profile, my_profile, register, user_dashboard, update_profile_picture, logout_view
 from .auth_views import CustomLoginView
 from .payment_views import submit_payment, payment_detail, payment_history
+from .notification_views import notifications, notification_detail, mark_notification_read, mark_all_notifications_read
 from .manager_views import (
     manager_dashboard,
     manager_venues,
@@ -52,6 +53,11 @@ __all__ = [
     'update_profile_picture',
     'logout_view',
     'CustomLoginView',
+    # Notification views
+    'notifications',
+    'notification_detail',
+    'mark_notification_read',
+    'mark_all_notifications_read',
     # Payment views
     'submit_payment',
     'payment_detail',

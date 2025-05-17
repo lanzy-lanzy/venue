@@ -1,0 +1,159 @@
+<!-- Notification Modal -->
+<div id="notification-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none;">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] flex flex-col">
+        <!-- Modal Header -->
+        <div class="bg-primary text-white py-4 px-6 rounded-t-lg flex justify-between items-center">
+            <h3 class="text-xl font-semibold">Notifications</h3>
+            <button onclick="closeModal('notification-modal')" class="text-white hover:text-accent">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <div class="overflow-y-auto flex-grow">
+            {% if recent_notifications %}
+                <div class="divide-y divide-gray-200">
+                    {% for notification in recent_notifications %}
+                        <div class="p-4 hover:bg-gray-50 {% if not notification.is_read %}border-l-4 border-accent{% endif %}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-primary">{{ notification.title }}</h4>
+                                    <p class="text-xs text-gray-500">{{ notification.created_at|date:"M d, Y, g:i a" }}</p>
+                                </div>
+                                {% if not notification.is_read %}
+                                    <a href="{% url 'mark_notification_read' notification.id %}" 
+                                       class="text-accent hover:text-accent/80 text-sm"
+                                       hx-get="{% url 'mark_notification_read' notification.id %}"
+                                       hx-swap="none"
+                                       hx-trigger="click"
+                                       onclick="event.preventDefault(); markNotificationRead({{ notification.id }});">
+                                        Mark as Read
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="mt-2 text-gray-700 text-sm whitespace-pre-line">
+                                {{ notification.message|truncatechars:100 }}
+                            </div>
+                            <div class="mt-2">
+                                <a href="{% url 'notification_detail' notification.id %}" class="text-accent hover:text-accent/80 text-sm">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="p-8 text-center text-gray-500">
+                    <svg class="h-16 w-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    <p>No notifications</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="border-t border-gray-200 p-4 bg-gray-50 rounded-b-lg">
+            <div class="flex justify-between">
+                <a href="{% url 'notifications' %}" class="text-primary hover:text-primary/80 text-sm font-medium">
+                    View All Notifications
+                </a>
+                {% if unread_notification_count > 0 %}
+                <a href="{% url 'mark_all_notifications_read' %}" 
+                   class="text-accent hover:text-accent/80 text-sm font-medium"
+                   hx-post="{% url 'mark_all_notifications_read' %}"
+                   hx-swap="none"
+                   hx-trigger="click"
+                   onclick="event.preventDefault(); markAllNotificationsRead();">
+                    Mark All as Read
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function markNotificationRead(notificationId) {
+        // Send AJAX request to mark notification as read
+        fetch(`/notifications/${notificationId}/mark-read/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Update UI to reflect the notification is read
+                const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                if (notificationElement) {
+                    notificationElement.classList.remove('border-l-4', 'border-accent');
+                    const markReadButton = notificationElement.querySelector('.mark-read-button');
+                    if (markReadButton) {
+                        markReadButton.style.display = 'none';
+                    }
+                }
+                
+                // Update notification counter
+                updateNotificationCounter();
+            }
+        })
+        .catch(error => console.error('Error marking notification as read:', error));
+    }
+    
+    function markAllNotificationsRead() {
+        // Send AJAX request to mark all notifications as read
+        fetch('/notifications/mark-all-read/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Update UI to reflect all notifications are read
+                const notificationElements = document.querySelectorAll('.border-l-4.border-accent');
+                notificationElements.forEach(element => {
+                    element.classList.remove('border-l-4', 'border-accent');
+                });
+                
+                const markReadButtons = document.querySelectorAll('.mark-read-button');
+                markReadButtons.forEach(button => {
+                    button.style.display = 'none';
+                });
+                
+                // Update notification counter
+                updateNotificationCounter(0);
+            }
+        })
+        .catch(error => console.error('Error marking all notifications as read:', error));
+    }
+    
+    function updateNotificationCounter(count = null) {
+        // Update the notification counter in the UI
+        const counters = document.querySelectorAll('.notification-counter');
+        
+        if (count === 0 || count === null) {
+            counters.forEach(counter => {
+                counter.style.display = 'none';
+            });
+        } else if (count > 0) {
+            counters.forEach(counter => {
+                counter.textContent = count;
+                counter.style.display = 'flex';
+            });
+        } else {
+            // If count is not provided, decrement the current count
+            counters.forEach(counter => {
+                const currentCount = parseInt(counter.textContent);
+                if (currentCount > 1) {
+                    counter.textContent = currentCount - 1;
+                } else {
+                    counter.style.display = 'none';
+                }
+            });
+        }
+    }
+</script>

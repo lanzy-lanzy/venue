@@ -109,12 +109,14 @@
                                     <div class="text-sm text-gray-500">{{ booking.time_slot.start_time|time:"g:i A" }} - {{ booking.time_slot.end_time|time:"g:i A" }}</div>
                                 </td>
                                 <td>
-                                    <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
-                                        {{ booking.status|title }}
+                                    <span class="badge {% if booking.status == 'confirmed' %}badge-success{% elif booking.status == 'pending' %}badge-warning{% elif booking.status == 'free' %}badge-success{% else %}badge-danger{% endif %}">
+                                        {{ booking.get_status_display }}
                                     </span>
                                 </td>
                                 <td>
-                                    {% if booking.payments.exists %}
+                                    {% if booking.is_free_venue %}
+                                        <span class="badge badge-success">Free</span>
+                                    {% elif booking.payments.exists %}
                                         {% with payment=booking.payments.first %}
                                             {% if payment.status == 'completed' %}
                                                 <span class="badge badge-success">Paid</span>
@@ -137,7 +139,7 @@
                                     <div class="flex space-x-2">
                                         <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-secondary">View</a>
 
-                                        {% if booking.status == 'confirmed' %}
+                                        {% if booking.status == 'confirmed' and not booking.is_free_venue %}
                                             {% if not booking.payments.exists or booking.payments.first.status != 'completed' %}
                                             <a href="{% url 'submit_payment' booking.id %}" class="btn btn-sm bg-green-600 text-white hover:bg-green-500">
                                                 Pay Now
@@ -205,6 +207,7 @@
     </div>
 {% include 'partials/user_profile_picture_modal.html' %}
 {% include 'partials/edit_profile_modal.html' %}
+{% include 'partials/notification_modal.html' %}
 
 <script>
     // Function to open the profile picture modal
@@ -220,6 +223,11 @@
     // Function to close a modal
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Function to open the notification modal
+    function openNotificationModal() {
+        document.getElementById('notification-modal').style.display = 'flex';
     }
 
     // Function to submit profile picture form
@@ -301,6 +309,16 @@
             editProfileModal.addEventListener('click', function(event) {
                 if (event.target === editProfileModal) {
                     closeModal('edit-profile-modal');
+                }
+            });
+        }
+
+        // Notification modal
+        const notificationModal = document.getElementById('notification-modal');
+        if (notificationModal) {
+            notificationModal.addEventListener('click', function(event) {
+                if (event.target === notificationModal) {
+                    closeModal('notification-modal');
                 }
             });
         }
